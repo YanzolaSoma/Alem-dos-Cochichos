@@ -1,155 +1,84 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-<title>Transferida — Visual Novel (Completo)</title>
+<title>Transferida — Visual Novel</title>
 <style>
 :root{--beige:#f3e0cf;--brown:#9a4a1a;--ui-dark:rgba(0,0,0,0.6);--muted:#d7cbb8}
-*{box-sizing:border-box;margin:0;padding:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial}
+*{box-sizing:border-box;margin:0;padding:0;font-family:Inter, system-ui, Arial}
 html,body,#app{height:100%;width:100%;background:#000}
 body{overflow:hidden}
 #app{position:fixed;inset:0;display:flex;align-items:stretch;justify-content:stretch}
 .stage{flex:1;position:relative;background-size:cover;background-position:center center;display:flex;align-items:center;justify-content:center}
-
-/* menu overlay */
-.menuOverlay{position:absolute;inset:0;display:flex;flex-direction:column;gap:18px;align-items:center;justify-content:center;background:rgba(0,0,0,0.3);}
+.menuOverlay{position:absolute;inset:0;display:flex;flex-direction:column;gap:18px;align-items:center;justify-content:center;background:rgba(0,0,0,0.35);}
 .menuLogo{font-size:clamp(36px,6vw,64px);font-weight:900;color:var(--brown);text-shadow:0 4px 0 rgba(0,0,0,.25)}
 .menuArt{height:200px;width:200px;border-radius:12px;object-fit:cover}
 .playButton{background:var(--brown);color:var(--beige);font-weight:900;padding:18px 36px;border-radius:12px;border:10px solid rgba(243,224,207,0.95);font-size:clamp(28px,4vw,54px);cursor:pointer;box-shadow:0 10px 30px rgba(0,0,0,.6)}
 .small{color:var(--muted);font-size:16px}
-
-/* creator tag */
 .creatorTag{position:absolute;right:2.5vw;bottom:2.5vh;color:var(--beige);font-weight:800;text-shadow:0 2px 0 rgba(0,0,0,.35);font-size:clamp(12px,1.5vw,20px)}
-
-/* character */
 .charWrap{position:relative;z-index:3;display:flex;align-items:center;justify-content:center;pointer-events:none}
 .charWrap img{max-height:86vh;max-width:60vw}
-
-/* dialogue UI */
 .ui{position:absolute;left:50%;transform:translateX(-50%);bottom:3vh;width:92%;max-width:1400px;display:flex;flex-direction:column;gap:12px;align-items:stretch;z-index:6}
 .nameBox{align-self:flex-start;background:var(--brown);color:var(--beige);padding:14px 18px;border-radius:6px;border:8px solid var(--beige);font-weight:900;font-size:clamp(18px,2.2vw,30px)}
 .dialogueBox{background:linear-gradient(180deg, rgba(0,0,0,0.6), rgba(0,0,0,0.45));border-radius:8px;padding:18px 22px;border:8px solid rgba(243,224,207,0.95);min-height:96px;display:flex;align-items:center}
 .dialogueText{color:var(--beige);font-size:clamp(16px,1.9vw,22px);line-height:1.45}
-
-/* large centered choices */
 .choicesContainer{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:7}
 .choicesInner{display:flex;flex-direction:column;gap:18px;pointer-events:auto}
 .choiceBtn{background:var(--beige);color:var(--brown);font-weight:900;padding:18px 40px;border:12px solid rgba(154,74,26,0.95);font-size:clamp(22px,3vw,44px);border-radius:6px;cursor:pointer;box-shadow:0 12px 30px rgba(0,0,0,.45)}
-
-/* fade */
 .fadeIn{animation:fadeIn .35s ease both}
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-
-@media(max-width:720px){.menuOverlay{left:0;top:0;width:100%;height:100%}.playButton{padding:12px}.nameBox{padding:10px}.dialogueBox{padding:12px}.choiceBtn{padding:12px 18px;font-size:20px}}
 </style>
 </head>
 <body>
 <div id="app">
-<div id="stage" class="stage" style="background-image:url('https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEitjz6qtSF51NzlqrmObmI_LFOouhnMrEl48hzIO-cUlrncgmb_MQSFMpK8YKyKbfSddSvJ4qN2hukHRDFcQ99KfFZyJydyZYky7lHlXJkOJoC-4YQIAXeF1YuK5V4co3CIWkKCFYj9sEo4P0MValBeurEwCERfRiB-iV0dM5PUy6dkS1UbmbGzCtR5ix5K/w945-h600-p-k-no-nu/CRIADO%20POR%20YAN%20COMERLATTO%20MASSONI.jpg')">
+  <div id="stage" class="stage" style="background-image:url('https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjJIdENAJVgqTQDsjT21lO4Rm2sc1IV3Qt-ViY76pamcH_OhUouZ0yvKbHAZ6pHt2O_vgyk6ftATy2sLXrE55MfNfTwlazc2DbkCT-0bT9uaXQSvyBuaPTRWFxTzDuSo_DIg2CH8W4o34H-_0doZdZS7o_80cbC8vPVHHv7JyBC0sz6PT5mR2EBVDx9xrkR/s320/1f28dff2-9eda-40dc-aa50-272e6f3d114d.png')">
+    
+    <div class="menuOverlay fadeIn" id="menuOverlay">
+      <img class="menuArt" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgbmefjKbkNBKcqJy7UdSK882TD8EE8O4e30uqSUaAIMQqKgXUzL6tOq4OwMrBdgyaCmUVv76tPUoDLQ_EbLYc8aM8NVRDp6u0RaBNTWOfd0Qm52APoExfVmhG9jyGW3JqcE_R_cJQuMI6Oo4xdybpjhG43h8rABRZyTxNwzDpzkIx7EGnBtlb8GiGzamz3/s320/7fd3a151-778d-40e6-a9ce-d59fb56b6595.png" alt="arte">
+      <div class="menuLogo">Transferida</div>
+      <div class="small">Uma história sobre timidez, coragem e conexões</div>
+      <button id="playBtn" class="playButton">PLAY</button>
+    </div>
 
-<!-- MENU -->
-<div class="menuOverlay fadeIn" id="menuOverlay">
-  <img class="menuArt" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEitjz6qtSF51NzlqrmObmI_LFOouhnMrEl48hzIO-cUlrncgmb_MQSFMpK8YKyKbfSddSvJ4qN2hukHRDFcQ99KfFZyJydyZYky7lHlXJkOJoC-4YQIAXeF1YuK5V4co3CIWkKCFYj9sEo4P0MValBeurEwCERfRiB-iV0dM5PUy6dkS1UbmbGzCtR5ix5K/w945-h600-p-k-no-nu/CRIADO%20POR%20YAN%20COMERLATTO%20MASSONI.jpg" alt="arte">
-  <div class="menuLogo">Transferida</div>
-  <div class="small">Uma história sobre timidez, coragem e conexões</div>
-  <button id="playBtn" class="playButton">PLAY</button>
-  <div style="display:flex;gap:8px;margin-top:6px">
-    <button id="continueBtn" class="choiceBtn" style="font-size:14px;padding:10px 16px;border-width:8px">Continuar</button>
-    <button id="loadBtn" class="choiceBtn" style="font-size:14px;padding:10px 16px;border-width:8px">Carregar</button>
+    <div class="charWrap" id="charWrap">
+      <img id="charImg" src="" alt="personagem" style="display:none">
+    </div>
+
+    <div class="creatorTag">CRIADO POR: YAN COMERLATTO MASSONI</div>
+
+    <div class="ui" id="ui" style="display:none">
+      <div class="nameBox" id="nameBox">[Sistema]</div>
+      <div class="dialogueBox"><div class="dialogueText" id="dialogueText"></div></div>
+    </div>
+
+    <div class="choicesContainer" id="choicesContainer" style="display:none">
+      <div class="choicesInner" id="choicesInner"></div>
+    </div>
   </div>
-</div>
-
-<!-- Personagem (ESCONDIDO no menu) -->
-<div class="charWrap" id="charWrap" style="display:none">
-  <img id="charImg" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhdG6e5sjfiLbvSbtVGxFIX_LmGxXh7wRWzg_ZgqxeDvxsAXAldYsgWPhyphenhyphentlbmJX4ZQnGl7ypGO6sed3JdnGqt3KC_pGsOXgD3TKnTsif8dK_gMBcwJ-8sD4IxKyzQamy7dIQSZhez4dSYQ4NH7X9SBjvIWVhREIkfctaoJQGg-qHMGQvtgJ9bsYpfpmz0U/s320/63ad9301-3cdc-4956-9826-aabba17021fc.png" alt="personagem">
-</div>
-
-<div class="creatorTag">CRIADO POR: YAN COMERLATTO MASSONI</div>
-
-<!-- UI -->
-<div class="ui" id="ui" style="display:none">
-  <div class="nameBox" id="nameBox">[Sistema]</div>
-  <div class="dialogueBox">
-    <div class="dialogueText" id="dialogueText">Bem-vindo(a). Clique para avançar.</div>
-  </div>
-</div>
-
-<!-- Choices -->
-<div class="choicesContainer" id="choicesContainer" style="display:none">
-  <div class="choicesInner" id="choicesInner"></div>
-</div>
-
-</div>
 </div>
 
 <script>
-// EXPRESSÕES
-const EXPRESSIONS = { 
-  neutral:'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhdG6e5sjfiLbvSbtVGxFIX_LmGxXh7wRWzg_ZgqxeDvxsAXAldYsgWPhyphenhyphentlbmJX4ZQnGl7ypGO6sed3JdnGqt3KC_pGsOXgD3TKnTsif8dK_gMBcwJ-8sD4IxKyzQamy7dIQSZhez4dSYQ4NH7X9SBjvIWVhREIkfctaoJQGg-qHMGQvtgJ9bsYpfpmz0U/s320/63ad9301-3cdc-4956-9826-aabba17021fc.png', 
-  shy:'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhsyGAEZ9nzbS8RpxfWa5TMZz5QWoR7wFj_j5qHGNGnu6qDQRjpyjwA-VE-pXfjG-ShHfqyUIzRiYsF74dfEw0tAgOVL6pspbfwe6LJczWMEJI87kW-PuI3qqsEYX8o0RgDageRemNCGCMX6iwt8jI-LbJEUcUf53nvIR71oFpZeWU41dXjC7TYkszEO_am/s320/image-removebg-preview%20(20).png' 
+// expressões
+const EXPRESSIONS = {
+  neutral:"https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhdG6e5sjfiLbvSbtVGxFIX_LmGxXh7wRWzg_ZgqxeDvxsAXAldYsgWPhyphenhyphentlbmJX4ZQnGl7ypGO6sed3JdnGqt3KC_pGsOXgD3TKnTsif8dK_gMBcwJ-8sD4IxKyzQamy7dIQSZhez4dSYQ4NH7X9SBjvIWVhREIkfctaoJQGg-qHMGQvtgJ9bsYpfpmz0U/s320/63ad9301-3cdc-4956-9826-aabba17021fc.png",
+  uncomfortable:"https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj57HEfWxF7k2EwEY2qiX4w7kzhf_WXbhygRHNgOFmCDsn67USVncB37DrIKASpUpLVv055XzrPjQcR-Evv2AdXX7cpleZypH1JoEsnmG3MyBnI5i7Ae2EhQxIO0GMir2PQvsZo-hUEGkGU3Z_lacDG0a7nkNBWNBjBATObetW78RyvVvomEXFQoxJfnF6i/s320/38dbc72f-adc5-4736-a151-3f9de6e6a7d1-removebg-preview.png",
+  shy:"https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhsyGAEZ9nzbS8RpxfWa5TMZz5QWoR7wFj_j5qHGNGnu6qDQRjpyjwA-VE-pXfjG-ShHfqyUIzRiYsF74dfEw0tAgOVL6pspbfwe6LJczWMEJI87kW-PuI3qqsEYX8o0RgDageRemNCGCMX6iwt8jI-LbJEUcUf53nvIR71oFpZeWU41dXjC7TYkszEO_am/s320/image-removebg-preview%20(20).png",
+  happy:"https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh9la3On91cbXMdMpHtbNBY8KA2EujruvL9NhjzrQ0C-97z5-QzPU5rNdvUSswIIYDrzkLmlr-VJWydfC8sDp5PjBamztTsqMJZGwmnR2EzdOD_8VNKqBepo32j8B0gTZwRiMo-iH8U7BD4vOjK-pNxiY_BRBxvAa1hnUq-0QSKwUQVClJ2Ff3BPj3iTWo6/s320/image-removebg-preview%20(21).png",
+  sad:"https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjP6B6yiU2kgRbV-RFjrGi02YfUOAW28T4658XGJg2UDKpmeUEQtHzT62WB5XKAubxcSCnBHXWt9tlvJhotsgL1bq6rmNjPBL2LdbaDmgtkFvkyhVZrsgGGTHT6SklZJFwvZQNTHc-oX4PDFuvRbxGC-_GNlntAoMgJYEoIeNJfbc3vMK8v6zfU3Zh-bXBq/s320/image-removebg-preview%20(22).png",
+  angry:"https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg3sQ77kGYV_0_uNMV82EiRzpNjr60lctM41yl8QWFixf9affV9kW1-HCFeR48ku8X9oDFlgWiGEgPDd9syFLMZgmBC9OmKsDFCFLqlIfZ4Aj42SaTWr_Qqxf70svG-A0e_L0jgGtOzFHqOllxzY5p4gL8yAZ17DyqoHnPinRmCzpoi-MunbRscLZGO3iRR/s320/image-removebg-preview%20(23).png",
+  surprised:"https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEilnbH9h6X0cwNyy2X5_63Ml6DVktg3IdS3go4Zk8krhNhhLlsjEMVGY-PRKFjcPWiQ4LgmIQhhnz9HqzVA9LKdJUUJuR2GQBxw0hPPXXwBgAnzmEdWZz5EEP-meZBFdYI_dfcNjH0KEVaDzyxPgswnAd8ym3srLwCtE7js9lBUo-batFsJWzsYDDKNa57n/s320/3fdf9aee-6f8e-4324-a71a-6a23b6b6dd4e.png",
+  love:"https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgOSmp99WsQKTTi6f7L0soPMDlqptx4PNyIkzgqvrP3Zn5qrkpw5Tv8VWGKnRwq7cVFfI61_uGiyBX0qR-b7ayAmAOgMQrUOjsutXavbOzkgHjou1S4gr4holfvasFcwdNyc7PYEdQDbnyt3bm4j7MM9glTl7jN6kzIMESHWYa4dQumAkswcoRBIdWY7NH2/s320/459765c8-bc95-4be8-a9da-7fd2cb19b402.png"
+};
+// backgrounds
+const BG = {
+  classroom:"https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjJIdENAJVgqTQDsjT21lO4Rm2sc1IV3Qt-ViY76pamcH_OhUouZ0yvKbHAZ6pHt2O_vgyk6ftATy2sLXrE55MfNfTwlazc2DbkCT-0bT9uaXQSvyBuaPTRWFxTzDuSo_DIg2CH8W4o34H-_0doZdZS7o_80cbC8vPVHHv7JyBC0sz6PT5mR2EBVDx9xrkR/s320/1f28dff2-9eda-40dc-aa50-272e6f3d114d.png",
+  hall:"https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiwiK8RXZ2nlILZd6UGmDVOmDyQwB75RPkCajEf25wIYcc2lzVkelRyEGR-uqlpdUaUYfx6MXRNcsP61P6gwPwWTR0JgsiLjmanAu6fjIM_Ran9-uBVq-HOk8tO1sjAjdFAHRvVIknXgVHMQasCs56WHtIXvPs7UbONOR5ZiyqteuQ7pBhtAlm2p9xU-IMK/s320/302624f7-28c7-4504-997b-605a17d08aee.png",
+  library:"https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEidX2J7SNrB70DkBK722ZQJ_woMipa0yTd_8taF8Jze-qNvxHvlSy1dQCrvWTXs89mgSAdEtdDrdzqMdCgSlJ9wnFGO6BbDG9dl2UIDmPtYvTUUFKVvXvVwjQiS82a_MYqBk8qIMQL83yGSlfN3Qhtrb_keC2R3PaugNsZkf2Qs6ugyXHOQPAGz-5Yw1U3u/s320/dc5dbbf1-9147-481d-b212-8a725307a261.png",
+  yard:"https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgtkCqfrwELTVFVub9ZsINhIoQyyoD6qCxhZu_D4_Yeml7jlN6GZbQdJr1AI6rWnyp9si3WKnlD3t7eb1GHc0ERvazctJWZu3nvWaC86dmPV9UI8srFINATAIOByoj5U3LQZpWw07k1M5Tvf0N-983645wpJvDwyk_-oAv0XDLtd9YCfiKM0u5f1xte-1qf/s320/25c9779d-f2b4-4bd2-9955-4fc3c1f36b49.png",
+  street:"https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjU03KO_GkbUfBWgVQiDfd7A0r3mcSVdQGuQOa1elc0IZ59bu9Cdr4NAeaVQ9fZM7ScgxW8MGIaeLHyT57OzN95EZF62pGh0lfeEFaMiV52XLhSwSi6Ut4bljWRV4X3ApFX46IV40iIGZl6TuVUdAiOYSaOexa3w101uCb48A2u9cn_ECCInrM1EJlHIvQw/s320/f08408c7-9ab7-49f4-bea8-96c35ff47669.png"
 };
 
-// BACKGROUNDS
-const BACKGROUNDS = { 
-  classroom:'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjJIdENAJVgqTQDsjT21lO4Rm2sc1IV3Qt-ViY76pamcH_OhUouZ0yvKbHAZ6pHt2O_vgyk6ftATy2sLXrE55MfNfTwlazc2DbkCT-0bT9uaXQSvyBuaPTRWFxTzDuSo_DIg2CH8W4o34H-_0doZdZS7o_80cbC8vPVHHv7JyBC0sz6PT5mR2EBVDx9xrkR/s320/1f28dff2-9eda-40dc-aa50-272e6f3d114d.png',
-  yard:'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgtkCqfrwELTVFVub9ZsINhIoQyyoD6qCxhZu_D4_Yeml7jlN6GZbQdJr1AI6rWnyp9si3WKnlD3t7eb1GHc0ERvazctJWZu3nvWaC86dmPV9UI8srFINATAIOByoj5U3LQZpWw07k1M5Tvf0N-983645wpJvDwyk_-oAv0XDLtd9YCfiKM0u5f1xte-1qf/s320/25c9779d-f2b4-4bd2-9955-4fc3c1f36b49.png',
-  street:'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjU03KO_GkbUfBWgVQiDfd7A0r3mcSVdQGuQOa1elc0IZ59bu9Cdr4NAeaVQ9fZM7ScgxW8MGIaeLHyT57OzN95EZF62pGh0lfeEFaMiV52XLhSwSi6Ut4bljWRV4X3ApFX46IV40iIGZl6TuVUdAiOYSaOexa3w101uCb48A2u9cn_ECCInrM1EJlHIvQw/s320/f08408c7-9ab7-49f4-bea8-96c35ff47669.png' 
-};
+// refs
+const stage=document.getElementById("stage"),menuOverlay=document.getElementById("menuOverlay"),playBtn=document.getElementById("playBtn"),charImg=document.getElementById("charImg"),ui=document.getElementById("ui"),nameBox=document.getElementById("nameBox"),dialog
 
-// DOM
-const stage=document.getElementById('stage'),
-menuOverlay=document.getElementById('menuOverlay'),
-playBtn=document.getElementById('playBtn'),
-continueBtn=document.getElementById('continueBtn'),
-loadBtn=document.getElementById('loadBtn'),
-charWrap=document.getElementById('charWrap'),
-charImg=document.getElementById('charImg'),
-ui=document.getElementById('ui'),
-nameBox=document.getElementById('nameBox'),
-dialogueText=document.getElementById('dialogueText'),
-choicesContainer=document.getElementById('choicesContainer'),
-choicesInner=document.getElementById('choicesInner');
-
-// STATE
-const state={playerName:'Você',affection:0,sceneKey:'menu',lines:[],lineIndex:0,pendingChoices:null};
-
-// SCENES (exemplo resumido)
-const SCENES={
-  menu:{bg:BACKGROUNDS.classroom},
-  intro:{bg:BACKGROUNDS.classroom,lines:[
-    {s:'Sistema',t:'Você está em um dia comum na escola.'},
-    {s:'Professor',t:'— Turma, hoje temos uma nova aluna.'},
-    {s:'Narrador',t:'Ela entra devagar, evita contato visual e se senta no fundo da sala. Todos cochicham.'}
-  ]}
-};
-
-// Funções
-function goTo(key){
-  const scene=SCENES[key];
-  if(!scene) return;
-  state.sceneKey=key;
-  stage.style.backgroundImage=`url('${scene.bg}')`;
-  state.lines=scene.lines||[];
-  state.lineIndex=0;
-  showLine();
-}
-
-function showLine(){
-  if(state.lineIndex>=state.lines.length) return;
-  const line=state.lines[state.lineIndex];
-  nameBox.textContent=line.s;
-  dialogueText.textContent=(typeof line.t==="function"?line.t():line.t).replace('{playerName}',state.playerName);
-  state.lineIndex++;
-}
-
-// PLAY
-playBtn.addEventListener('click',()=>{
-  menuOverlay.style.display='none';
-  charWrap.style.display='flex';
-  ui.style.display='flex';
-  goTo('intro');
-});
-</script>
-</body>
-</html>
