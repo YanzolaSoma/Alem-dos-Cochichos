@@ -1,719 +1,306 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Além dos Cochichos — Visual Novel</title>
-<style>
-  :root{
-    --accent:#b35918;
-    --accent-2:#f1d9c0;
-    --bg:#0f0f1a;
-    --panel-bg: rgba(255,255,255,0.95);
-    --text:#fff;
-    font-family: "Segoe UI", Roboto, Arial, sans-serif;
-  }
-  *{box-sizing:border-box}
-  html,body{height:100%;margin:0;background:var(--bg);color:var(--text);}
-  .wrap{height:100vh;display:flex;align-items:center;justify-content:center;padding:16px;}
-  .game{
-    width:1280px; max-width:100%; height:720px; position:relative; border-radius:12px; overflow:hidden;
-    box-shadow:0 20px 60px rgba(0,0,0,0.6); background:#0b0b12;
-  }
-
-  /* MENU */
-  #menu{
-    position:absolute; inset:0; display:flex; gap:24px; align-items:center; padding:36px; background:
-      linear-gradient(180deg, rgba(10,10,20,0.9), rgba(20,12,28,0.8));
-  }
-  .menu-left{flex:1;color:#f7e8d8}
-  .menu-logo{display:flex;align-items:center;gap:14px}
-  .menu-logo img{height:84px;border-radius:8px;box-shadow:0 8px 30px rgba(0,0,0,0.45)}
-  .menu-title{font-size:54px;font-weight:900;letter-spacing:1px}
-  .menu-sub{margin-top:8px;font-size:14px;opacity:0.85}
-  .menu-buttons{display:flex;flex-direction:column;gap:12px;margin-top:28px}
-  .btn{
-    width:320px;padding:18px 22px;font-size:20px;border-radius:10px;border:0;cursor:pointer;font-weight:800;
-    background:var(--accent); color:white; box-shadow:0 8px 30px rgba(0,0,0,0.45)
-  }
-  .btn.secondary{background:transparent;border:2px solid rgba(255,255,255,0.08);color:#fff}
-
-  .menu-right{width:48%; height:100%; background-size:cover; background-position:center; border-radius:10px; overflow:hidden; display:flex;flex-direction:column;justify-content:space-between}
-  .menu-right .overlay{background:linear-gradient(180deg, rgba(0,0,0,0.15), rgba(0,0,0,0.45)); padding:18px}
-  .credits{font-size:13px;color:#fff; opacity:0.9}
-
-  /* SCREEN */
-  #screen{display:none; width:100%;height:100%;position:relative;background:#000}
-  .bg{position:absolute;inset:0;background-size:cover;background-position:center;transition:background-image .45s ease, filter .45s ease}
-  .fade{transition:opacity .35s ease}
-  .char{position:absolute;bottom:56px;left:50%;transform:translateX(-50%);max-height:76%;pointer-events:none;transition:all .35s ease}
-  .char img{max-height:76vh;display:block}
-
-  /* Dialogue box */
-  .dialogue{
-    position:absolute;left:28px;right:28px;bottom:26px;padding:18px;background:linear-gradient(180deg, rgba(255,255,255,0.96), rgba(250,250,250,0.92));
-    border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,0.6);display:flex;gap:16px;align-items:flex-start;
-  }
-  .speaker{width:220px;background:var(--accent-2);color:var(--accent); font-weight:900;padding:10px;border-radius:8px;text-transform:uppercase;font-size:18px}
-  .text{flex:1;font-size:20px;color:#222;line-height:1.45;font-weight:600;min-height:64px}
-  .choices{position:absolute;left:50%;top:46%;transform:translate(-50%,-50%);display:none;flex-direction:column;gap:12px;z-index:40}
-  .choice{min-width:560px;padding:18px 14px;background:#f1d9c0;border:4px solid var(--accent);border-radius:8px;font-size:20px;font-weight:900;cursor:pointer;text-align:center}
-  .hud{position:absolute;left:18px;top:18px;color:#fff;font-weight:800;background:rgba(0,0,0,0.35);padding:8px 12px;border-radius:8px;font-size:14px}
-  .controls{position:absolute;right:18px;top:18px;display:flex;gap:8px}
-  .small-btn{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.06);color:#fff;padding:8px 10px;border-radius:8px;cursor:pointer;font-weight:700}
-
-  /* responsivo leve */
-  @media (max-width:900px){
-    .choice{min-width:320px;font-size:18px}
-    .menu-left .menu-title{font-size:36px}
-    .menu-logo img{height:64px}
-  }
-
-</style>
+  <meta charset="UTF-8">
+  <title>Além dos Cochichos</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      font-family: Arial, sans-serif;
+      background: black;
+      overflow: hidden;
+    }
+    #menu, #game, #credits {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+    #menu {
+      background: url("imagens/menu.png") no-repeat center center/cover;
+      display: flex;
+    }
+    #menu img {
+      width: 400px;
+      margin-bottom: 20px;
+    }
+    #menu button, #credits button {
+      margin: 10px;
+      padding: 15px 30px;
+      font-size: 20px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.8);
+    }
+    #game {
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      justify-content: flex-end;
+      align-items: flex-end;
+      flex-direction: column;
+    }
+    #character {
+      position: absolute;
+      bottom: 100px;
+      left: 50px;
+      height: 70%;
+    }
+    #dialogueBox {
+      background: rgba(0,0,0,0.7);
+      color: white;
+      padding: 20px;
+      width: 90%;
+      max-width: 900px;
+      margin: 20px auto;
+      border-radius: 15px;
+      font-size: 18px;
+    }
+    #choices {
+      margin-top: 15px;
+    }
+    #choices button {
+      margin: 5px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 8px;
+      border: none;
+    }
+    #credits {
+      background: black;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+  </style>
 </head>
 <body>
-<div class="wrap">
-  <div class="game" id="gameRoot">
 
-    <!-- MENU -->
-    <div id="menu">
-      <div class="menu-left">
-        <div class="menu-logo">
-          <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgI2IFFxEOWJ9a2Qxm2b8AVPIXSrfpoNQ7jrUFciTuWd1bOVGt04d9eGL_bvg-Cm36pxQGXQWT0FVYF6Zy9ER3Sa1SoeFtaN5LjatxqOvS8QTeMgmWkkwkFtYtKaebKV5jSPJ6d4pWcE9rabmDlo9j8sdH96qc0_4_CFwgOAP1rjHljWdBgOAEqYgtY9_HM/s320/1f0391d1-b190-48e3-9823-482c6624bf97.png" alt="logo">
-          <div>
-            <div class="menu-title">Além dos Cochichos</div>
-            <div class="menu-sub">Uma visual novel sobre confiança, escolhas e pequenas gentilezas.</div>
-          </div>
-        </div>
+<div id="menu">
+  <img src="imagens/logo.png" alt="Logo do Jogo">
+  <button onclick="startGame()">Iniciar</button>
+  <button onclick="showCredits()">Créditos</button>
+  <button onclick="closeGame()">Sair</button>
+</div>
 
-        <div class="menu-buttons">
-          <button class="btn" id="startBtn">INICIAR NOVA PARTIDA</button>
-          <button class="btn secondary" id="loadBtn">CARREGAR PROGRESSO</button>
-          <button class="btn secondary" id="saveBtn">SALVAR PROGRESSO</button>
-          <button class="btn secondary" id="creditsBtn">CRÉDITOS</button>
-          <button class="btn secondary" id="exitBtn">SAIR (VOLTAR AO MENU)</button>
-        </div>
+<div id="credits">
+  <h1>Créditos</h1>
+  <p>História, Arte e Desenvolvimento: Você :)</p>
+  <button onclick="backToMenu()">Voltar</button>
+</div>
 
-      </div>
-
-      <div class="menu-right" id="menuArt" style="background-image:url('https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgbmefjKbkNBKcqJy7UdSK882TD8EE8O4e30uqSUaAIMQqKgXUzL6tOq4OwMrBdgyaCmUVv76tPUoDLQ_EbLYc8aM8NVRDp6u0RaBNTWOfd0Qm52APoExfVmhG9jyGW3JqcE_R_cJQuMI6Oo4xdybpjhG43h8rABRZyTxNwzDpzkIx7EGnBtlb8GiGzamz3/s320/7fd3a151-778d-40e6-a9ce-d59fb56b6595.png');">
-        <div class="overlay" style="color:#fff">
-          <div style="font-size:20px;font-weight:800">Menu</div>
-          <div style="margin-top:8px;opacity:0.95">Use Iniciar para começar uma nova história. Salvar e Carregar utilizam o seu navegador.</div>
-          <div style="margin-top:18px" class="credits">CRIADO POR: YAN COMERLATTO MASSONI — Código gerado por ChatGPT</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- GAME SCREEN -->
-    <div id="screen">
-      <div id="bg" class="bg"></div>
-      <div id="char" class="char"><img id="charImg" src="" alt=""></div>
-
-      <div class="hud" id="hud">Ato: <span id="ato">1</span> • Afeto: <span id="affection">0</span></div>
-      <div class="controls">
-        <button class="small-btn" id="quickSave">Salvar</button>
-        <button class="small-btn" id="quickLoad">Carregar</button>
-        <button class="small-btn" id="toMenu">Menu</button>
-      </div>
-
-      <div class="dialogue" id="dialogue">
-        <div class="speaker" id="speaker">NARRADOR</div>
-        <div class="text" id="text">...</div>
-      </div>
-
-      <div class="choices" id="choices"></div>
-    </div>
-
+<div id="game">
+  <img id="character" src="">
+  <div id="dialogueBox">
+    <p id="dialogueText"></p>
+    <div id="choices"></div>
   </div>
 </div>
 
+<!-- Sons -->
+<audio id="menuMusic" loop>
+  <source src="sons/musica_menu.mp3" type="audio/mpeg">
+</audio>
+<audio id="gameMusic" loop>
+  <source src="sons/musica_jogo.mp3" type="audio/mpeg">
+</audio>
+<audio id="clickSound">
+  <source src="sons/click.mp3" type="audio/mpeg">
+</audio>
+
 <script>
-/* ============================
-   ASSETS (sprites e cenários)
-   ============================ */
-const assets = {
-  sprites:{
-    neutra: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhdG6e5sjfiLbvSbtVGxFIX_LmGxXh7wRWzg_ZgqxeDvxsAXAldYsgWPhyphenhyphentlbmJX4ZQnGl7ypGO6sed3JdnGqt3KC_pGsOXgD3TKnTsif8dK_gMBcwJ-8sD4IxKyzQamy7dIQSZhez4dSYQ4NH7X9SBjvIWVhREIkfctaoJQGg-qHMGQvtgJ9bsYpfpmz0U/s320/63ad9301-3cdc-4956-9826-aabba17021fc.png",
-    desconforto: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj57HEfWxF7k2EwEY2qiX4w7kzhf_WXbhygRHNgOFmCDsn67USVncB37DrIKASpUpLVv055XzrPjQcR-Evv2AdXX7cpleZypH1JoEsnmG3MyBnI5i7Ae2EhQxIO0GMir2PQvsZo-hUEGkGU3Z_lacDG0a7nkNBWNBjBATObetW78RyvVvomEXFQoxJfnF6i/s320/38dbc72f-adc5-4736-a151-3f9de6e6a7d1-removebg-preview.png",
-    envergonhada: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhsyGAEZ9nzbS8RpxfWa5TMZz5QWoR7wFj_j5qHGNGnu6qDQRjpyjwA-VE-pXfjG-ShHfqyUIzRiYsF74dfEw0tAgOVL6pspbfwe6LJczWMEJI87kW-PuI3qqsEYX8o0RgDageRemNCGCMX6iwt8jI-LbJEUcUf53nvIR71oFpZeWU41dXjC7TYkszEO_am/s320/image-removebg-preview%20(20).png",
-    feliz: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh9la3On91cbXMdMpHtbNBY8KA2EujruvL9NhjzrQ0C-97z5-QzPU5rNdvUSswIIYDrzkLmlr-VJWydfC8sDp5PjBamztTsqMJZGwmnR2EzdOD_8VNKqBepo32j8B0gTZwRiMo-iH8U7BD4vOjK-pNxiY_BRBxvAa1hnUq-0QSKwUQVClJ2Ff3BPj3iTWo6/s320/image-removebg-preview%20(21).png",
-    triste: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjP6B6yiU2kgRbV-RFjrGi02YfUOAW28T4658XGJg2UDKpmeUEQtHzT62WB5XKAubxcSCnBHXWt9tlvJhotsgL1bq6rmNjPBL2LdbaDmgtkFvkyhVZrsgGGTHT6SklZJFwvZQNTHc-oX4PDFuvRbxGC-_GNlntAoMgJYEoIeNJfbc3vMK8v6zfU3Zh-bXBq/s320/image-removebg-preview%20(22).png",
-    raiva: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg3sQ77kGYV_0_uNMV82EiRzpNjr60lctM41yl8QWFixf9affV9kW1-HCFeR48ku8X9oDFlgWiGEgPDd9syFLMZgmBC9OmKsDFCFLqlIfZ4Aj42SaTWr_Qqxf70svG-A0e_L0jgGtOzFHqOllxzY5p4gL8yAZ17DyqoHnPinRmCzpoi-MunbRscLZGO3iRR/s320/image-removebg-preview%20(23).png",
-    surpresa: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEilnbH9h6X0cwNyy2X5_63Ml6DVktg3IdS3go4Zk8krhNhhLlsjEMVGY-PRKFjcPWiQ4LgmIQhhnz9HqzVA9LKdJUUJuR2GQBxw0hPPXXwBgAnzmEdWZz5EEP-meZBFdYI_dfcNjH0KEVaDzyxPgswnAd8ym3srLwCtE7js9lBUo-batFsJWzsYDDKNa57n/s320/3fdf9aee-6f8e-4324-a71a-6a23b6b6dd4e.png",
-    romantica: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgOSmp99WsQKTTi6f7L0soPMDlqptx4PNyIkzgqvrP3Zn5qrkpw5Tv8VWGKnRwq7cVFfI61_uGiyBX0qR-b7ayAmAOgMQrUOjsutXavbOzkgHjou1S4gr4holfvasFcwdNyc7PYEdQDbnyt3bm4j7MM9glTl7jN6kzIMESHWYa4dQumAkswcoRBIdWY7NH2/s320/459765c8-bc95-4be8-a9da-7fd2cb19b402.png"
-  },
-  bgs:{
-    sala:"https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjJIdENAJVgqTQDsjT21lO4Rm2sc1IV3Qt-ViY76pamcH_OhUouZ0yvKbHAZ6pHt2O_vgyk6ftATy2sLXrE55MfNfTwlazc2DbkCT-0bT9uaXQSvyBuaPTRWFxTzDuSo_DIg2CH8W4o34H-_0doZdZS7o_80cbC8vPVHHv7JyBC0sz6PT5mR2EBVDx9xrkR/s320/1f28dff2-9eda-40dc-aa50-272e6f3d114d.png",
-    corredor:"https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiwiK8RXZ2nlILZd6UGmDVOmDyQwB75RPkCajEf25wIYcc2lzVkelRyEGR-uqlpdUaUYfx6MXRNcsP61P6gwPwWTR0JgsiLjmanAu6fjIM_Ran9-uBVq-HOk8tO1sjAjdFAHRvVIknXgVHMQasCs56WHtIXvPs7UbONOR5ZiyqteuQ7pBhtAlm2p9xU-IMK/s320/302624f7-28c7-4504-997b-605a17d08aee.png",
-    biblioteca:"https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEidX2J7SNrB70DkBK722ZQJ_woMipa0yTd_8taF8Jze-qNvxHvlSy1dQCrvWTXs89mgSAdEtdDrdzqMdCgSlJ9wnFGO6BbDG9dl2UIDmPtYvTUUFKVvXvVwjQiS82a_MYqBk8qIMQL83yGSlfN3Qhtrb_keC2R3PaugNsZkf2Qs6ugyXHOQPAGz-5Yw1U3u/s320/dc5dbbf1-9147-481d-b212-8a725307a261.png",
-    patio:"https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgtkCqfrwELTVFVub9ZsINhIoQyyoD6qCxhZu_D4_Yeml7jlN6GZbQdJr1AI6rWnyp9si3WKnlD3t7eb1GHc0ERvazctJWZu3nvWaC86dmPV9UI8srFINATAIOByoj5U3LQZpWw07k1M5Tvf0N-983645wpJvDwyk_-oAv0XDLtd9YCfiKM0u5f1xte-1qf/s320/25c9779d-f2b4-4bd2-9955-4fc3c1f36b49.png",
-    rua:"https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjU03KO_GkbUfBWgVQiDfd7A0r3mcSVdQGuQOa1elc0IZ59bu9Cdr4NAeaVQ9fZM7ScgxW8MGIaeLHyT57OzN95EZF62pGh0lfeEFaMiV52XLhSwSi6Ut4bljWRV4X3ApFX46IV40iIGZl6TuVUdAiOYSaOexa3w101uCb48A2u9cn_ECCInrM1EJlHIvQw/s320/f08408c7-9ab7-49f4-bea8-96c35ff47669.png"
-  }
-};
+const menuMusic = document.getElementById("menuMusic");
+const gameMusic = document.getElementById("gameMusic");
+const clickSound = document.getElementById("clickSound");
 
-/* ============================
-   NODES / ROTEIRO (Ato 1 a 6)
-   (Cada nó: id, ato, bg, speaker, text, sprite, choices[])
-   ============================ */
-const nodes = {
-  // --- ATO 1: O COMEÇO ---
-  start:{
-    id:"start", ato:1, bg:assets.bgs.sala, speaker:"NARRADOR",
-    text:"Dia comum na escola. Uma nova aluna é apresentada. O ar enche de cochichos e olhares curiosos.",
-    sprite:null,
-    choices:[
-      {text:"Ignorar e seguir a aula", next:"ignorar1", affection:0},
-      {text:"Puxar papo depois da apresentação", next:"puxar1", affection:0}
-    ]
-  },
-
-  puxar1:{
-    id:"puxar1", ato:1, bg:assets.bgs.sala, speaker:"VOCÊ",
-    text:"Você se aproxima e se apresenta. Ela responde timidamente — voz baixa, olhos evitando contato.",
-    sprite:assets.sprites.envergonhada,
-    choices:[
-      {text:"Oferecer ajuda no trabalho em dupla", next:"dupla1", affection:1},
-      {text:"Fazer uma piada para quebrar o gelo", next:"piada1", affection:0}
-    ]
-  },
-
-  dupla1:{
-    id:"dupla1", ato:1, bg:assets.bgs.sala, speaker:"CHIAKI (desconforto)",
-    text:"Ela aceita, mas agradece com um sorriso contido. Algo na postura dela indica medo de confiar.",
-    sprite:assets.sprites.desconforto,
-    choices:[
-      {text:"Ser paciente e explicar com calma", next:"bond_intro", affection:1},
-      {text:"Fazer piadas e ser descolado", next:"piada1", affection:-1}
-    ]
-  },
-
-  piada1:{
-    id:"piada1", ato:1, bg:assets.bgs.sala, speaker:"CHIAKI (envergonhada)",
-    text:"A piada causa um riso forçado. Ela parece esconder algo. Talvez você tenha perdido o timing.",
-    sprite:assets.sprites.envergonhada,
-    choices:[
-      {text:"Pedir desculpas e explicar sério", next:"bond_intro", affection:1},
-      {text:"Apertar e continuar brincando", next:"dist1", affection:-1}
-    ]
-  },
-
-  dist1:{
-    id:"dist1", ato:1, bg:assets.bgs.sala, speaker:"NARRADOR",
-    text:"Você se afasta e segue com a aula. Ela permanece reservada. A história poderá seguir distante ou próxima, dependendo das suas escolhas.",
-    sprite:null,
-    choices:[
-      {text:"Ir para o intervalo", next:"intervalo1", affection:0}
-    ]
-  },
-
-  bond_intro:{
-    id:"bond_intro", ato:1, bg:assets.bgs.sala, speaker:"NARRADOR",
-    text:"Ao longo da aula você conversa poucas palavras — mas suas ações mostram cuidado. No intervalo, você a vê sozinha no pátio, desenhando.",
-    sprite:assets.sprites.neutra,
-    choices:[
-      {text:"Chegar devagar e comentar o desenho", next:"patio_draw", affection:1},
-      {text:"Respeitar o espaço e observar de longe", next:"patio_respect", affection:0}
-    ]
-  },
-
-  // --- ATO 2: PRIMEIRO CONTATO ---
-  intervalo1:{
-    id:"intervalo1", ato:2, bg:assets.bgs.patio, speaker:"NARRADOR",
-    text:"No pátio a cena é tranquila. Ela escuta música e desenha. Um detalhe: um rabisco repetido — sempre a mesma pequena casa.",
-    sprite:assets.sprites.neutra,
-    choices:[
-      {text:"Comentar sobre a casa no desenho", next:"patio_draw", affection:1},
-      {text:"Ficar em silêncio, apenas observar", next:"patio_respect", affection:0},
-      {text:"Zombar com amigos (ruim)", next:"bully", affection:-2}
-    ]
-  },
-
-  patio_draw:{
-    id:"patio_draw", ato:2, bg:assets.bgs.patio, speaker:"CHIAKI (envergonhada)",
-    text:"Ela fecha os olhos por um segundo, como se lembrasse de algo. Depois responde que a casa é só um desenho que faz sentir segurança.",
-    sprite:assets.sprites.envergonhada,
-    choices:[
-      {text:"Dizer que gosta do desenho", next:"invite_lib", affection:1},
-      {text:"Ignorar e seguir com amigos", next:"dist_after", affection:-1}
-    ]
-  },
-
-  patio_respect:{
-    id:"patio_respect", ato:2, bg:assets.bgs.patio, speaker:"NARRADOR",
-    text:"Você respeita o espaço dela. Mais tarde você percebe que pequenos gestos são notados — uma troca de olhares cordial acontece.",
-    sprite:assets.sprites.neutra,
-    choices:[
-      {text:"Procurá-la na biblioteca", next:"biblioteca1", affection:1},
-      {text:"Conversar com os amigos", next:"dist_after", affection:0}
-    ]
-  },
-
-  bully:{
-    id:"bully", ato:2, bg:assets.bgs.patio, speaker:"NARRADOR",
-    text:"Seu comentário vira piada entre colegas; ela escuta. Ela se solta e vai embora. Você sente que fez algo errado.",
-    sprite:assets.sprites.triste,
-    choices:[
-      {text:"Ir atrás e se desculpar", next:"apology", affection:-1},
-      {text:"Ficar e fingir não ver", next:"dist_after", affection:-2}
-    ]
-  },
-
-  apology:{
-    id:"apology", ato:2, bg:assets.bgs.corredor, speaker:"CHIAKI (triste)",
-    text:"Ela aceita a desculpa, mas diz que confiança não volta fácil. Menciona que mudou de cidade por ter sido alvo de bullying.",
-    sprite:assets.sprites.triste,
-    choices:[
-      {text:"Perguntar mais sobre o que aconteceu", next:"reveal_past", affection:1},
-      {text:"Mudar de assunto para aliviar", next:"light_talk", affection:0}
-    ]
-  },
-
-  // biblioteca pequeno arco
-  invite_lib:{
-    id:"invite_lib", ato:2, bg:assets.bgs.biblioteca, speaker:"NARRADOR",
-    text:"Você a convida para a biblioteca. Ela hesita, mas acaba aceitando. Lá, um gesto dela quebra um pouco o gelo.",
-    sprite:assets.sprites.neutra,
-    choices:[
-      {text:"Conversar sobre livros", next:"book_talk", affection:1},
-      {text:"Falar sobre música", next:"music_talk", affection:0}
-    ]
-  },
-
-  biblioteca1:{
-    id:"biblioteca1", ato:2, bg:assets.bgs.biblioteca, speaker:"NARRADOR",
-    text:"Na biblioteca ela indica um livro que te ajuda num trabalho — um gesto simples, quase automático, mas significativo.",
-    sprite:assets.sprites.neutra,
-    choices:[
-      {text:"Agradecer e conversar", next:"book_talk", affection:1},
-      {text:"Sair sem falar muito", next:"dist_after", affection:0}
-    ]
-  },
-
-  book_talk:{
-    id:"book_talk", ato:3, bg:assets.bgs.biblioteca, speaker:"CHIAKI (feliz)",
-    text:"Ela fala sobre autoras e histórias que a confortam. A voz fica mais solta quando fala do que ama.",
-    sprite:assets.sprites.feliz,
-    choices:[
-      {text:"Perguntar pelas histórias que ela escreve", next:"writes_reveal", affection:1},
-      {text:"Fingir interesse e mudar o assunto", next:"surface", affection:0}
-    ]
-  },
-
-  music_talk:{
-    id:"music_talk", ato:3, bg:assets.bgs.biblioteca, speaker:"CHIAKI (neutra)",
-    text:"Ela mostra uma música: calma, melancólica. Diz que a música é um lugar seguro.",
-    sprite:assets.sprites.neutra,
-    choices:[
-      {text:"Pedir a playlist", next:"bond_music", affection:1},
-      {text:"Dizer que prefere algo alegre", next:"surface", affection:-1}
-    ]
-  },
-
-  writes_reveal:{
-    id:"writes_reveal", ato:3, bg:assets.bgs.biblioteca, speaker:"CHIAKI (surpresa)",
-    text:"Ela revela que escreve contos sombrios às escondidas — não quer que todos leiam, mas confessa que escrever a ajuda a processar o passado.",
-    sprite:assets.sprites.surpresa,
-    choices:[
-      {text:"Dizer que achou bonito e interessado(a)", next:"bond_deepen", affection:2},
-      {text:"Sugerir que deveria escrever coisas mais leves", next:"offend_write", affection:-1}
-    ]
-  },
-
-  bond_music:{
-    id:"bond_music", ato:3, bg:assets.bgs.biblioteca, speaker:"CHIAKI (feliz)",
-    text:"Ela sussurra o nome da música e sorri. Você sente que ganhou um raro fragmento de confiança.",
-    sprite:assets.sprites.feliz,
-    choices:[
-      {text:"Ouvir com ela no fone (compartilhar momento)", next:"share_headphone", affection:2},
-      {text:"Anotar o nome e sair", next:"surface", affection:0}
-    ]
-  },
-
-  surface:{
-    id:"surface", ato:3, bg:assets.bgs.biblioteca, speaker:"NARRADOR",
-    text:"A conversa fica superficial e cordial. Vocês se tornam conhecidos — a relação tem potencial, mas ainda falta profundidade.",
-    sprite:assets.sprites.neutra,
-    choices:[
-      {text:"Manter contato e aproximar devagar", next:"bond_deepen", affection:1},
-      {text:"Seguir a rotina sem se envolver", next:"dist_after", affection:0}
-    ]
-  },
-
-  bond_deepen:{
-    id:"bond_deepen", ato:3, bg:assets.bgs.biblioteca, speaker:"CHIAKI (romantica)",
-    text:"Com conversas sobre arte, música e família, ela começa a confiar. Conta que cuida da avó e que mudar de cidade foi um novo começo.",
-    sprite:assets.sprites.romantica,
-    choices:[
-      {text:"Oferecer ajuda prática (ir ao mercado, estudar junto)", next:"support_offer", affection:2},
-      {text:"Expressar apoio emocional (ouvir sempre)", next:"support_listen", affection:1}
-    ]
-  },
-
-  offend_write:{
-    id:"offend_write", ato:3, bg:assets.bgs.biblioteca, speaker:"CHIAKI (raiva)",
-    text:"A sugestão a magoa — ela reage com frieza e lembra que escrever é importante pra ela. O clima azeda.",
-    sprite:assets.sprites.raiva,
-    choices:[
-      {text:"Pedir desculpas sinceras", next:"apology2", affection:-1},
-      {text:"Persistir no tom, você se distancia", next:"dist_after", affection:-2}
-    ]
-  },
-
-  support_offer:{
-    id:"support_offer", ato:4, bg:assets.bgs.sala, speaker:"NARRADOR",
-    text:"Você começa a ajudar nos momentos que pode: um recado, um trabalho, companhia em dias difíceis. O afeto cresce.",
-    sprite:assets.sprites.neutra,
-    choices:[
-      {text:"Convidar para a festa da escola (pressão suave)", next:"festa_offer", affection:1},
-      {text:"Continuar construindo confiança devagar", next:"quiet_build", affection:1}
-    ]
-  },
-
-  support_listen:{
-    id:"support_listen", ato:4, bg:assets.bgs.sala, speaker:"NARRADOR",
-    text:"Seu ouvido atento se torna algo que ela espera. Ela compartilha mais detalhes: medos, momentos bons e estranhos sonhos.",
-    sprite:assets.sprites.neutra,
-    choices:[
-      {text:"Mostrar interesse ativo", next:"quiet_build", affection:1},
-      {text:"Ser frio e lógico (pode afastar)", next:"dist_after", affection:-1}
-    ]
-  },
-
-  quiet_build:{
-    id:"quiet_build", ato:4, bg:assets.bgs.corredor, speaker:"NARRADOR",
-    text:"Pequenos gestos: um bilhete, um livro emprestado, uma caminhada sob chuva — a barreira lentamente cede.",
-    sprite:assets.sprites.neutra,
-    choices:[
-      {text:"Ler uma das histórias dela na biblioteca", next:"read_story", affection:2},
-      {text:"Sugerir que ela mostre a família (um passo grande)", next:"family_push", affection:-1}
-    ]
-  },
-
-  read_story:{
-    id:"read_story", ato:5, bg:assets.bgs.biblioteca, speaker:"CHIAKI (romantica)",
-    text:"Ela deixa você ler. O conto é delicado e sombrio — mas nela há verdade. No fim, ela diz: 'não é fácil mostrar isso'.",
-    sprite:assets.sprites.romantica,
-    choices:[
-      {text:"Elogiar a sensibilidade do texto", next:"festa_offer", affection:2},
-      {text:"Dizer que achou pesado e desconfortável", next:"dist_after", affection:-1}
-    ]
-  },
-
-  family_push:{
-    id:"family_push", ato:5, bg:assets.bgs.rua, speaker:"CHIAKI (raiva)",
-    text:"Sugerir que ela mostre a família gera reação forte — ela diz que alguns assuntos são um território íntimo.",
-    sprite:assets.sprites.raiva,
-    choices:[
-      {text:"Pedir desculpas e recuar", next:"apology2", affection:-1},
-      {text:"Insistir e empurrar (mau)", next:"dist_after", affection:-2}
-    ]
-  },
-
-  apology2:{
-    id:"apology2", ato:5, bg:assets.bgs.rua, speaker:"NARRADOR",
-    text:"Você pede desculpas. Ela aceita, mas exige tempo. A festa da escola se aproxima — será o teste final.",
-    sprite:assets.sprites.triste,
-    choices:[
-      {text:"Oferecer acompanhar na festa", next:"festa_offer", affection:1},
-      {text:"Dizer que entende se ela não quiser ir", next:"dist_after", affection:0}
-    ]
-  },
-
-  festa_offer:{
-    id:"festa_offer", ato:5, bg:assets.bgs.rua, speaker:"NARRADOR",
-    text:"A festa é a situação onde tudo pode mudar: olhares, provocações, e a escolha do jogador em agir ou não.",
-    sprite:assets.sprites.neutra,
-    choices:[
-      {text:"Garantir que ficará ao lado dela durante a festa", next:"festa_night", affection:1},
-      {text:"Deixar que ela vá sozinha (respeito)", next:"festa_alone", affection:0}
-    ]
-  },
-
-  festa_night:{
-    id:"festa_night", ato:5, bg:assets.bgs.rua, speaker:"NARRADOR",
-    text:"Na festa, um colega começa a provocar. É o momento de escolher: defender, dialogar, ou apenas observar.",
-    sprite:assets.sprites.neutra,
-    choices:[
-      {text:"Defender com firmeza", next:"final_defend", affection:2},
-      {text:"Falar com calma e acalmar a situação", next:"final_talk", affection:2},
-      {text:"Ficar em silêncio (não intervir)", next:"final_neutral", affection:0}
-    ]
-  },
-
-  festa_alone:{
-    id:"festa_alone", ato:5, bg:assets.bgs.rua, speaker:"NARRADOR",
-    text:"Ela vai sozinha. Você não a acompanha — a noite tem altos e baixos. Dependendo do que aconteceu, isso pode afastá-la.",
-    sprite:assets.sprites.neutra,
-    choices:[
-      {text:"Tentar ligar/mandar mensagem depois", next:"after_text", affection:0},
-      {text:"Não fazer nada (arrisca distanciamento)", next:"dist_after", affection:-2}
-    ]
-  },
-
-  after_text:{
-    id:"after_text", ato:5, bg:assets.bgs.rua, speaker:"CHIAKI (triste)",
-    text:"Ela responde lentamente. A conversa é curta e contida. Um evento ali pode ter feito com que ela se retraísse.",
-    sprite:assets.sprites.triste,
-    choices:[
-      {text:"Convencê-la a conversar no dia seguinte", next:"final_talk", affection:0},
-      {text:"Aceitar distância", next:"dist_after", affection:-1}
-    ]
-  },
-
-  final_defend:{
-    id:"final_defend", ato:6, bg:assets.bgs.rua, speaker:"NARRADOR",
-    text:"Você confronta o provocador com firmeza. Ela, surpresa, sente-se protegida. Ao fim da noite, há um momento íntimo entre vocês.",
-    sprite:assets.sprites.romantica,
-    choices:[
-      {text:"Segurar a mão dela e falar que se importa", next:"end_romance", affection:3},
-      {text:"Apenas acompanhar, mantendo amizade sólida", next:"end_friend", affection:1}
-    ]
-  },
-
-  final_talk:{
-    id:"final_talk", ato:6, bg:assets.bgs.rua, speaker:"CHIAKI (romantica)",
-    text:"Você calma a situação com palavras e presença. Ela respira aliviada e, mais tarde, confessa que sentiu-se vista.",
-    sprite:assets.sprites.romantica,
-    choices:[
-      {text:"Admitir que também se importa", next:"end_romance", affection:2},
-      {text:"Dizer que quer ser apenas amigo(a)", next:"end_friend", affection:1}
-    ]
-  },
-
-  final_neutral:{
-    id:"final_neutral", ato:6, bg:assets.bgs.rua, speaker:"NARRADOR",
-    text:"A festa passa sem grandes atos heroicos. Vocês seguem amigos, com possibilidades no futuro.",
-    sprite:assets.sprites.feliz,
-    choices:[
-      {text:"Ver final", next:"end_friend", affection:0}
-    ]
-  },
-
-  // distanciamento
-  dist_after:{
-    id:"dist_after", ato:5, bg:assets.bgs.corredor, speaker:"NARRADOR",
-    text:"Por atitudes ou silêncio, ela se distancia. O tempo passa e a relação raramente volta ao que poderia ter sido.",
-    sprite:assets.sprites.triste,
-    choices:[
-      {text:"Ver final triste", next:"end_sad", affection:-2},
-      {text:"Tentar recuperar (esforço tardio)", next:"late_try", affection:-1}
-    ]
-  },
-
-  late_try:{
-    id:"late_try", ato:6, bg:assets.bgs.biblioteca, speaker:"NARRADOR",
-    text:"Você tenta um esforço tardio: bilhetes, presença, mas a confiança foi muito abalada. Nem sempre é possível recuperar tudo.",
-    sprite:assets.sprites.neutra,
-    choices:[
-      {text:"Aceitar que algumas coisas mudaram (final amigo distante)", next:"end_friend", affection:0},
-      {text:"Persistir e reconquistar (final possível)", next:"end_romance", affection:1}
-    ]
-  },
-
-  // Finais
-  end_romance:{
-    id:"end_romance", ato:6, bg:assets.bgs.rua, speaker:"NARRADOR",
-    text:"Final ROMÂNTICO — Vocês constroem algo verdadeiro: confiança trocada aos poucos, cuidado e ternura. Fim.",
-    sprite:assets.sprites.romantica,
-    choices:[
-      {text:"Jogar novamente", next:"start", affection:0}
-    ]
-  },
-
-  end_friend:{
-    id:"end_friend", ato:6, bg:assets.bgs.patio, speaker:"NARRADOR",
-    text:"Final AMIZADE — Vocês seguem próximos de forma honesta e protetora, sem romance explícito, mas com afeição. Fim.",
-    sprite:assets.sprites.feliz,
-    choices:[
-      {text:"Jogar novamente", next:"start", affection:0}
-    ]
-  },
-
-  end_sad:{
-    id:"end_sad", ato:6, bg:assets.bgs.sala, speaker:"NARRADOR",
-    text:"Final TRISTE — A distância persiste. Você fica com a sensação do que poderia ter sido. Fim.",
-    sprite:assets.sprites.triste,
-    choices:[
-      {text:"Jogar novamente", next:"start", affection:0}
-    ]
-  }
-};
-
-/* ============================
-   ENGINE
-   ============================ */
-let currentNode = null;
+let currentScene = 0;
 let affection = 0;
 
-// DOM
-const menu = document.getElementById("menu");
-const screen = document.getElementById("screen");
-const bgEl = document.getElementById("bg");
-const charImg = document.getElementById("charImg");
-const charWrap = document.getElementById("char");
-const speakerEl = document.getElementById("speaker");
-const textEl = document.getElementById("text");
-const choicesEl = document.getElementById("choices");
-const atoEl = document.getElementById("ato");
-const affectionEl = document.getElementById("affection");
-
-// Menu buttons
-document.getElementById("startBtn").onclick = ()=>{ startNewGame(); };
-document.getElementById("loadBtn").onclick = ()=>{ loadGame(true); };
-document.getElementById("saveBtn").onclick = ()=>{ saveGame(true); };
-document.getElementById("creditsBtn").onclick = showCredits;
-document.getElementById("exitBtn").onclick = ()=>{ alert("Você já está no menu — clique em Iniciar para jogar."); };
-
-// quick controls
-document.getElementById("quickSave").onclick = ()=>{ saveGame(true); };
-document.getElementById("quickLoad").onclick = ()=>{ loadGame(true); };
-document.getElementById("toMenu").onclick = ()=>{ if(confirm("Voltar ao menu? Progresso presente será salvo automaticamente.")){ saveGame(false); showMenu(); } };
-
-// show/hide
-function showMenu(){ menu.style.display="flex"; screen.style.display="none"; }
-function showScreen(){ menu.style.display="none"; screen.style.display="block"; }
-
-// start new
-function startNewGame(){
-  affection = 0;
-  updateHUD();
-  goToNode("start");
-  showScreen();
-}
-
-// goTo node
-function goToNode(id){
-  const node = nodes[id];
-  if(!node) return console.error("Node not found:", id);
-  currentNode = node;
-  // set bg
-  if(node.bg) bgEl.style.backgroundImage = `url('${node.bg}')`;
-  // char
-  if(node.sprite){
-    charImg.src = node.sprite;
-    charWrap.style.display = "block";
-  } else {
-    charImg.src = "";
-    charWrap.style.display = "none";
+const scenes = [
+  {
+    bg: "imagens/sala.png",
+    char: "imagens/personagem_neutra.png",
+    text: "O professor apresenta a nova aluna. A sala cai em silêncio, cochichos surgem ao fundo.",
+    choices: [
+      { text: "Ignorar.", next: 1 },
+      { text: "Puxar papo.", next: 2, affection: 1 }
+    ]
+  },
+  {
+    bg: "imagens/sala.png",
+    char: "imagens/personagem_triste.png",
+    text: "Você decide não falar nada. Ela permanece quieta, olhando para baixo.",
+    choices: [{ text: "Seguir a aula.", next: 3 }]
+  },
+  {
+    bg: "imagens/sala.png",
+    char: "imagens/personagem_desconfortavel.png",
+    text: "Você tenta puxar papo, mas ela responde timidamente, quase recusando.",
+    choices: [{ text: "Continuar a aula.", next: 3 }]
+  },
+  {
+    bg: "imagens/patio.png",
+    char: "imagens/personagem_neutra.png",
+    text: "No intervalo, você a vê sozinha, desenhando em um caderno.",
+    choices: [
+      { text: "Comentar sobre o desenho.", next: 4, affection: 1 },
+      { text: "Respeitar o espaço dela.", next: 5 }
+    ]
+  },
+  {
+    bg: "imagens/patio.png",
+    char: "imagens/personagem_envergonhada.png",
+    text: "Ela fecha o caderno rapidamente, corando. Mas parece guardar a lembrança.",
+    choices: [{ text: "Sorrir e sair.", next: 6 }]
+  },
+  {
+    bg: "imagens/patio.png",
+    char: "imagens/personagem_triste.png",
+    text: "Você respeita e passa reto. Ela permanece isolada.",
+    choices: [{ text: "Ir embora.", next: 6 }]
+  },
+  {
+    bg: "imagens/biblioteca.png",
+    char: "imagens/personagem_feliz.png",
+    text: "Na biblioteca, ela aponta um livro que você procurava. Uma ajuda inesperada.",
+    choices: [
+      { text: "Agradecer gentilmente.", next: 7, affection: 1 },
+      { text: "Fingir naturalidade.", next: 7 }
+    ]
+  },
+  {
+    bg: "imagens/corredor.png",
+    char: "imagens/personagem_triste.png",
+    text: "Um colega zoa ela no corredor. Você precisa decidir.",
+    choices: [
+      { text: "Defender ela.", next: 8, affection: 2 },
+      { text: "Ficar em silêncio.", next: 9 }
+    ]
+  },
+  {
+    bg: "imagens/rua.png",
+    char: "imagens/personagem_romantica.png",
+    text: "Após a chuva, vocês se abrigam juntos. Ela solta: 'Às vezes é difícil acreditar que alguém realmente se importa.'",
+    choices: [{ text: "Olhar nos olhos dela.", next: 10, affection: 2 }]
+  },
+  {
+    bg: "imagens/rua.png",
+    char: "imagens/personagem_triste.png",
+    text: "Ela se afasta e segue sozinha para casa.",
+    choices: [{ text: "Fim do dia.", next: 10 }]
+  },
+  {
+    bg: "imagens/sala.png",
+    char: "imagens/personagem_feliz.png",
+    text: "Chega o dia da festa da escola. Ela hesita em ir.",
+    choices: [
+      { text: "Convidá-la para ir com você.", next: 11, affection: 2 },
+      { text: "Deixar a decisão com ela.", next: 12 }
+    ]
+  },
+  {
+    bg: "imagens/patio.png",
+    char: "imagens/personagem_romantica.png",
+    text: "Vocês vão juntos. Pela primeira vez, ela sorri abertamente.",
+    choices: [{ text: "Final Romance", next: "romance" }]
+  },
+  {
+    bg: "imagens/patio.png",
+    char: "imagens/personagem_feliz.png",
+    text: "Ela prefere não ir. Mas a amizade entre vocês está sólida.",
+    choices: [{ text: "Final Amizade", next: "amizade" }]
   }
-  // speaker & text
-  speakerEl.textContent = node.speaker || "";
-  atoEl.textContent = node.ato || atoEl.textContent;
-  // type text
-  typeText(node.text || "");
-  // render choices
-  renderChoices(node.choices || []);
-}
+];
 
-// typewriter
-let typeInterval = null;
-function typeText(full){
-  clearInterval(typeInterval);
-  textEl.textContent = "";
-  let i = 0;
-  typeInterval = setInterval(()=>{
-    textEl.textContent += full[i] || "";
-    i++;
-    if(i > full.length) clearInterval(typeInterval);
-  },12);
-}
-
-// click to finish typing
-document.getElementById("dialogue").addEventListener("click", ()=>{
-  if(!currentNode) return;
-  if(textEl.textContent.length < (currentNode.text||"").length){
-    clearInterval(typeInterval);
-    textEl.textContent = currentNode.text || "";
-  } else {
-    // if no choices, auto continue first choice
-    if(!currentNode.choices || currentNode.choices.length===0){
-      showMenu();
-    }
+// finais
+const endings = {
+  romance: {
+    bg: "imagens/rua.png",
+    char: "imagens/personagem_romantica.png",
+    text: "Vocês caminham juntos sob a lua. Ela segura sua mão. Final Romance ❤️"
+  },
+  amizade: {
+    bg: "imagens/patio.png",
+    char: "imagens/personagem_feliz.png",
+    text: "Vocês continuam amigos, compartilhando pequenas alegrias. Final Amizade 🤝"
+  },
+  distanciamento: {
+    bg: "imagens/corredor.png",
+    char: "imagens/personagem_triste.png",
+    text: "Ela segue sua vida distante, e você percebe que perdeu a chance. Final Triste 💔"
   }
-});
+};
 
-// render choices
-function renderChoices(choices){
-  choicesEl.innerHTML = "";
-  if(!choices || choices.length === 0){
-    // show CONTINUAR
-    const c = document.createElement("div");
-    c.className = "choice";
-    c.textContent = "CONTINUAR";
-    c.onclick = ()=>{ autoNext(); };
-    choicesEl.appendChild(c);
-    choicesEl.style.display = "flex";
+function startGame() {
+  document.getElementById("menu").style.display = "none";
+  document.getElementById("game").style.display = "flex";
+  menuMusic.pause();
+  menuMusic.currentTime = 0;
+  gameMusic.play();
+  showScene(0);
+}
+
+function showCredits() {
+  document.getElementById("menu").style.display = "none";
+  document.getElementById("credits").style.display = "flex";
+}
+
+function backToMenu() {
+  document.getElementById("credits").style.display = "none";
+  document.getElementById("menu").style.display = "flex";
+}
+
+function closeGame() {
+  window.close();
+}
+
+function showScene(index) {
+  if (typeof index === "string") {
+    let ending = endings[index];
+    document.getElementById("game").style.backgroundImage = `url(${ending.bg})`;
+    document.getElementById("character").src = ending.char;
+    document.getElementById("dialogueText").innerText = ending.text;
+    document.getElementById("choices").innerHTML = `<button onclick="backToMenu()">Voltar ao Menu</button>`;
     return;
   }
-  choices.forEach(ch=>{
-    const el = document.createElement("div");
-    el.className = "choice";
-    el.textContent = ch.text;
-    el.onclick = ()=>{
-      // apply affection
-      if(typeof ch.affection === "number"){
-        affection += ch.affection;
-        updateHUD();
+
+  currentScene = index;
+  let scene = scenes[index];
+  document.getElementById("game").style.backgroundImage = `url(${scene.bg})`;
+  document.getElementById("character").src = scene.char;
+  document.getElementById("dialogueText").innerText = scene.text;
+  let choicesDiv = document.getElementById("choices");
+  choicesDiv.innerHTML = "";
+  scene.choices.forEach(choice => {
+    let btn = document.createElement("button");
+    btn.innerText = choice.text;
+    btn.onclick = () => {
+      clickSound.play();
+      if (choice.affection) affection += choice.affection;
+      if (choice.next === 10 && affection < 3) {
+        showScene("distanciamento");
+      } else {
+        showScene(choice.next);
       }
-      // go next
-      goToNode(ch.next);
     };
-    choicesEl.appendChild(el);
+    choicesDiv.appendChild(btn);
   });
-  choicesEl.style.display = "flex";
 }
 
-// default continue (first choice or back to menu)
-function autoNext(){
-  const first = currentNode.choices && currentNode.choices[0];
-  if(first){
-    if(typeof first.affection === "number"){ affection += first.affection; updateHUD(); }
-    goToNode(first.next);
-  } else showMenu();
-}
-
-// HUD
-function updateHUD(){
-  affectionEl.textContent = affection;
-}
-
-// Save / Load (localStorage)
-function saveGame(alertUser=true){
-  if(!currentNode) { if(alertUser) alert("Nada para salvar."); return; }
-  const save = {
-    nodeId: currentNode.id,
-    affection: affection,
-    timestamp: new Date().toISOString()
-  };
-  localStorage.setItem("alemdoscochichos_save", JSON.stringify(save));
-  if(alertUser) alert("Progresso salvo!");
-}
-function loadGame(alertUser=true){
-  const raw = localStorage.getItem("alemdoscochichos_save");
-  if(!raw){ if(alertUser) alert("Nenhum save encontrado."); return; }
-  try{
-    const s = JSON.parse(raw);
-    affection = s.affection || 0;
-    updateHUD();
-    goToNode(s.nodeId || "start");
-    showScreen();
-    if(alertUser) alert("Save carregado (salvo em: " + (s.timestamp||"??") + ")");
-  } catch(e){
-    console.error(e);
-    if(alertUser) alert("Erro ao carregar save.");
-  }
-}
-
-// Credits
-function showCredits(){
-  alert("Créditos:\\n- História e arte base: você (imagens fornecidas)\\n- Game prototype gerado com ajuda do ChatGPT\\n- Criado por: YAN COMERLATTO MASSONI");
-}
-
-// load menu by default
-showMenu();
-updateHUD();
-
+// inicia tocando música do menu
+window.onload = () => {
+  menuMusic.play();
+};
 </script>
 </body>
 </html>
