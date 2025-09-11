@@ -1,127 +1,380 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Visual Novel - Prototipo</title>
-<style>
-  :root{
-    --bg:#0f1621; --card:#0b1220; --accent:#7ab7ff;
-    --text:#e6eef8; --muted:#b7c6d6;
-    --ui-radius:14px;
-    font-family: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-  }
-  *{box-sizing:border-box}
-  html,body{height:100%; margin:0; background:linear-gradient(180deg,#071021 0%, #081427 100%); color:var(--text)}
-  #app{width:100%;height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
-  /* Game stage */
-  .game-wrap{width:100%;max-width:1280px;height:720px;border-radius:16px;overflow:hidden;position:relative;box-shadow:0 10px 40px rgba(0,0,0,0.6);background:#000;}
-  /* backgrounds */
-  .bg{position:absolute;inset:0;background-size:cover;background-position:center;transition:opacity .5s ease;opacity:1}
-  .bg.dim{filter:brightness(.65)}
-  /* character sprite */
-  .char{position:absolute;bottom:0;left:50%;transform:translateX(-50%);height:70%;background-size:contain;background-repeat:no-repeat;background-position:center bottom;pointer-events:none;transition:opacity .35s ease, transform .35s ease}
-  /* UI top bar */
-  .topbar{position:absolute;left:18px;top:16px;display:flex;gap:12px;align-items:center;z-index:60}
-  .logo{height:56px;width:56px;background-size:contain;background-repeat:no-repeat}
-  .creator{position:absolute;right:16px;top:12px;color:var(--muted);font-size:13px;z-index:80}
-  .creator strong{color:var(--text);font-weight:700}
-  /* text box */
-  .textbox{position:absolute;left:50%;transform:translateX(-50%);bottom:18px;width:92%;max-width:1180px;background:linear-gradient(180deg, rgba(11,18,32,0.84), rgba(6,10,18,0.9));border-radius:12px;padding:18px 20px;z-index:70;backdrop-filter: blur(4px);box-shadow:0 8px 20px rgba(0,0,0,0.6)}
-  .nameplate{font-weight:700;color:var(--accent);margin-bottom:6px}
-  .dialog{font-size:18px;line-height:1.45;color:var(--text);min-height:62px}
-  .choices{display:flex;gap:12px;margin-top:12px;flex-wrap:wrap}
-  .choice{background:rgba(255,255,255,0.03);padding:10px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);cursor:pointer;transition:all .15s;user-select:none}
-  .choice:hover{transform:translateY(-3px);box-shadow:0 6px 18px rgba(0,0,0,0.45)}
-  .next-hint{position:absolute;right:18px;bottom:26px;color:var(--muted);font-size:13px}
-  /* overlay screens */
-  .overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(2,6,12,0.6),rgba(2,6,12,0.85));display:flex;align-items:center;justify-content:center;z-index:90;backdrop-filter: blur(2px)}
-  .menu-card{width:720px;max-width:92%;background:linear-gradient(180deg,#071122,#0b1624);border-radius:16px;padding:28px;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,0.6)}
-  .menu-logo{width:180px;height:100px;margin:0 auto;background-size:contain;background-repeat:no-repeat}
-  .menu-title{font-size:28px;margin:10px 0 6px}
-  .menu-sub{color:var(--muted);margin-bottom:18px}
-  .menu-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
-  .btn{padding:12px 18px;border-radius:12px;border:0;background:var(--accent);color:#032031;font-weight:700;cursor:pointer}
-  .btn.ghost{background:transparent;color:var(--text);border:1px solid rgba(255,255,255,0.06)}
-  /* name input */
-  .row{margin:8px 0;display:flex;gap:8px;justify-content:center}
-  input[type=text]{padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:var(--text);min-width:220px}
-  /* affordances */
-  .small{font-size:13px;color:var(--muted)}
-  /* responsive */
-  @media (max-width:880px){
-    .game-wrap{height:86vh}
-    .char{height:58%}
-    .textbox{padding:14px}
-  }
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Visual Novel — Transferida</title>
+  <style>
+    :root{--bg:#0f1620;--panel:#101820;--accent:#8aa6ff;--muted:#bfc8d9}
+    *{box-sizing:border-box;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial}
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,#0b1220 0%, #0f1a2b 100%);color:#e6eef8}
+    /* Game container */
+    .game{max-width:1100px;margin:20px auto;border-radius:12px;overflow:hidden;box-shadow:0 10px 40px rgba(2,6,23,.7);position:relative}
+
+    /* Top bar with creator */
+    .topbar{display:flex;justify-content:space-between;align-items:center;padding:10px 18px;background:linear-gradient(90deg,rgba(255,255,255,0.02),transparent);border-bottom:1px solid rgba(255,255,255,0.02)}
+    .creator{font-size:13px;color:var(--muted);}
+    .logo{height:48px}
+
+    /* Main area */
+    .main{display:flex;height:640px;background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent)}
+    .stage{flex:1;position:relative;display:flex;align-items:flex-end;justify-content:center;overflow:hidden}
+
+    /* background images */
+    .bg{position:absolute;inset:0;background-size:cover;background-position:center;filter:brightness(.92)}
+
+    /* character sprite area */
+    .sprite{position:relative;z-index:5;max-height:100%;display:flex;align-items:flex-end;justify-content:center;width:60%}
+    .sprite img{max-height:86%;pointer-events:none;user-select:none;transform-origin:center bottom}
+
+    /* right panel for ui/menu/choices */
+    .side{width:360px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-left:1px solid rgba(255,255,255,0.02);display:flex;flex-direction:column}
+
+    /* menu / dialogue area */
+    .menu{padding:20px;display:flex;flex-direction:column;gap:12px;align-items:stretch}
+    .title{display:flex;align-items:center;gap:12px}
+    .title img{height:64px;border-radius:8px}
+    .title h1{font-size:18px;margin:0}
+    .btn{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:10px;border-radius:8px;color:var(--muted);cursor:pointer}
+    .btn:hover{border-color:rgba(138,166,255,.25);color:var(--accent)}
+
+    .input{display:flex;gap:8px}
+    .input input{flex:1;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
+
+    .dialogueBox{margin-top:auto;padding:18px;background:linear-gradient(180deg, rgba(2,6,23,.6), rgba(2,6,23,.8));border-top:1px solid rgba(255,255,255,0.02)}
+    .charName{font-weight:700;color:var(--accent);font-size:15px}
+    .text{margin-top:8px;color:#d7e5ff;line-height:1.45;min-height:68px}
+    .controls{display:flex;gap:8px;margin-top:12px}
+
+    .choices{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+    .choiceBtn{background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);cursor:pointer;text-align:left}
+    .choiceBtn:hover{border-color:rgba(138,166,255,.22)}
+
+    .hidden{display:none}
+    .center{display:flex;justify-content:center}
+    .small{font-size:12px;color:var(--muted)}
+
+    /* fade transitions */
+    .fadeIn{animation:fadeIn .5s ease forwards}
+    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+    /* responsive */
+    @media(max-width:960px){.game{margin:8px;height:100vh}.side{width:320px}.main{flex-direction:column;height:calc(100vh - 90px)}.sprite{width:100%}}
+  </style>
 </head>
 <body>
-<div id="app">
-  <div class="game-wrap" id="game">
+  <div class="game">
     <div class="topbar">
-      <div class="logo" id="menuArt"></div>
-      <div class="small" style="color:var(--muted);font-size:14px">Visual Novel Prototype</div>
-    </div>
-
-    <div class="creator small">Criador: <strong>YAN COMERLATTO MASSONI</strong></div>
-
-    <!-- backgrounds -->
-    <div id="bg" class="bg dim"></div>
-
-    <!-- character sprite -->
-    <div id="char" class="char" style="opacity:0"></div>
-
-    <!-- text box -->
-    <div class="textbox" id="textbox" style="display:none">
-      <div class="nameplate" id="speaker">—</div>
-      <div class="dialog" id="dialog"></div>
-      <div class="choices" id="choices"></div>
-      <div class="next-hint small" id="hint">Clique para avançar</div>
-    </div>
-
-    <!-- overlays: menu / name input / endings -->
-    <div class="overlay" id="menuOverlay">
-      <div class="menu-card">
-        <div class="menu-logo" id="menuLogo"></div>
-        <div class="menu-title">NOVO DIA — Visual Novel</div>
-        <div class="menu-sub">Um protótipo baseado na tua história. Escolhas afetam o afeto.</div>
-        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:10px">
-          <button class="btn" id="startBtn">JOGAR</button>
-          <button class="btn ghost" id="howBtn">COMO JOGAR</button>
-          <button class="btn ghost" id="creditsBtn">CRÉDITOS</button>
-        </div>
-        <div class="small">Imagens fornecidas por você — substitua-as quando quiser no código.</div>
-      </div>
-    </div>
-
-    <div class="overlay" id="nameOverlay" style="display:none">
-      <div class="menu-card">
-        <div class="menu-title">Escolha seu nome</div>
-        <div class="row">
-          <input type="text" id="playerNameInput" placeholder="Digite seu nome..." maxlength="20">
-          <button class="btn" id="confirmName">Confirmar</button>
-        </div>
-        <div class="small" style="margin-top:12px">Seu nome aparecerá nas falas do protagonista.</div>
-      </div>
-    </div>
-
-    <div class="overlay" id="endOverlay" style="display:none">
-      <div class="menu-card" id="endCard">
-        <div class="menu-title" id="endTitle">Fim</div>
-        <div class="menu-sub" id="endText"></div>
-        <div style="display:flex;gap:10px;justify-content:center;margin-top:14px">
-          <button class="btn" id="restartBtn">Reiniciar</button>
-          <button class="btn ghost" id="menuBtn">Voltar ao Menu</button>
+      <div style="display:flex;align-items:center;gap:12px">
+        <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgI2IFFxEOWJ9a2Qxm2b8AVPIXSrfpoNQ7jrUFciTuWd1bOVGt04d9eGL_bvg-Cm36pxQGXQWT0FVYF6Zy9ER3Sa1SoeFtaN5LjatxqOvS8QTeMgmWkkwkFtYtKaebKV5jSPJ6d4pWcE9rabmDlo9j8sdH96qc0_4_CFwgOAP1rjHljWdBgOAEqYgtY9_HM/s320/1f0391d1-b190-48e3-9823-482c6624bf97.png" alt="logo" class="logo">
+        <div style="display:flex;flex-direction:column">
+          <div style="font-weight:700">Transferida — Visual Novel</div>
+          <div class="small">Uma história sobre timidez, coragem e conexões</div>
         </div>
       </div>
+      <div class="creator">Criador: YAN COMERLATTO MASSONI</div>
     </div>
 
+    <div class="main">
+      <div class="stage">
+        <div id="bg" class="bg"></div>
+        <div class="sprite" id="spriteContainer">
+          <!-- character sprite will be injected here -->
+        </div>
+      </div>
+
+      <div class="side">
+        <div class="menu" id="menuPanel">
+          <div class="title">
+            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgbmefjKbkNBKcqJy7UdSK882TD8EE8O4e30uqSUaAIMQqKgXUzL6tOq4OwMrBdgyaCmUVv76tPUoDLQ_EbLYc8aM8NVRDp6u0RaBNTWOfd0Qm52APoExfVmhG9jyGW3JqcE_R_cJQuMI6Oo4xdybpjhG43h8rABRZyTxNwzDpzkIx7EGnBtlb8GiGzamz3/s320/7fd3a151-778d-40e6-a9ce-d59fb56b6595.png" alt="art">
+            <div>
+              <h1>Menu</h1>
+              <div class="small">Clique em Jogar para começar</div>
+            </div>
+          </div>
+
+          <div class="input">
+            <input id="playerName" placeholder="Digite seu nome (ex: Yanzola)" />
+            <button class="btn" id="playBtn">Jogar</button>
+          </div>
+
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn" id="continueBtn">Continuar</button>
+            <button class="btn" id="saveBtn">Salvar</button>
+            <button class="btn" id="loadBtn">Carregar</button>
+            <button class="btn" id="resetBtn">Reiniciar</button>
+          </div>
+
+          <div style="margin-top:8px;font-size:13px;color:var(--muted)">Status: <span id="affectionLabel">Afeto: 0</span></div>
+
+        </div>
+
+        <div class="dialogueBox" id="dialogueBox">
+          <div class="charName" id="charName">[Sistema]</div>
+          <div class="text" id="text">Bem-vindo(a). Clique em Jogar para iniciar a história.</div>
+
+          <div class="choices" id="choices"></div>
+
+          <div class="controls" id="controls">
+            <button class="btn" id="nextBtn">Próximo</button>
+            <div style="flex:1"></div>
+            <div class="small">Clique no espaço de texto ou em Próximo para avançar</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
   </div>
-</div>
 
-<script>
-/*
-  Visual Novel single-file engine (prototipo)
-  - Troque as URLs no objeto ASSETS para suas imagens finais
-  - Sistema de afeto (affection) que determina caminhos/finais
+  <script>
+    /* ------------------ Assets (preloaded) ------------------ */
+    const ASSETS = {
+      bg_classroom: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjJIdENAJVgqTQDsjT21lO4Rm2sc1IV3Qt-ViY76pamcH_OhUouZ0yvKbHAZ6pHt2O_vgyk6ftATy2sLXrE55MfNfTwlazc2DbkCT-0bT9uaXQSvyBuaPTRWFxTzDuSo_DIg2CH8W4o34H-_0doZdZS7o_80cbC8vPVHHv7JyBC0sz6PT5mR2EBVDx9xrkR/s320/1f28dff2-9eda-40dc-aa50-272e6f3d114d.png',
+      bg_corridor: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiwiK8RXZ2nlILZd6UGmDVOmDyQwB75RPkCajEf25wIYcc2lzVkelRyEGR-uqlpdUaUYfx6MXRNcsP61P6gwPwWTR0JgsiLjmanAu6fjIM_Ran9-uBVq-HOk8tO1sjAjdFAHRvVIknXgVHMQasCs56WHtIXvPs7UbONOR5ZiyqteuQ7pBhtAlm2p9xU-IMK/s320/302624f7-28c7-4504-997b-605a17d08aee.png',
+      bg_library: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEidX2J7SNrB70DkBK722ZQJ_woMipa0yTd_8taF8Jze-qNvxHvlSy1dQCrvWTXs89mgSAdEtdDrdzqMdCgSlJ9wnFGO6BbDG9dl2UIDmPtYvTUUFKVvXvVwjQiS82a_MYqBk8qIMQL83yGSlfN3Qhtrb_keC2R3PaugNsZkf2Qs6ugyXHOQPAGz-5Yw1U3u/s320/dc5dbbf1-9147-481d-b212-8a725307a261.png',
+      bg_yard: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgtkCqfrwELTVFVub9ZsINhIoQyyoD6qCxhZu_D4_Yeml7jlN6GZbQdJr1AI6rWnyp9si3WKnlD3t7eb1GHc0ERvazctJWZu3nvWaC86dmPV9UI8srFINATAIOByoj5U3LQZpWw07k1M5Tvf0N-983645wpJvDwyk_-oAv0XDLtd9YCfiKM0u5f1xte-1qf/s320/25c9779d-f2b4-4bd2-9955-4fc3c1f36b49.png',
+      bg_street: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjU03KO_GkbUfBWgVQiDfd7A0r3mcSVdQGuQOa1elc0IZ59bu9Cdr4NAeaVQ9fZM7ScgxW8MGIaeLHyT57OzN95EZF62pGh0lfeEFaMiV52XLhSwSi6Ut4bljWRV4X3ApFX46IV40iIGZl6TuVUdAiOYSaOexa3w101uCb48A2u9cn_ECCInrM1EJlHIvQw/s320/f08408c7-9ab7-49f4-bea8-96c35ff47669.png',
+
+      // expressions
+      neutral: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhdG6e5sjfiLbvSbtVGxFIX_LmGxXh7wRWzg_ZgqxeDvxsAXAldYsgWPhyphenhyphentlbmJX4ZQnGl7ypGO6sed3JdnGqt3KC_pGsOXgD3TKnTsif8dK_gMBcwJ-8sD4IxKyzQamy7dIQSZhez4dSYQ4NH7X9SBjvIWVhREIkfctaoJQGg-qHMGQvtgJ9bsYpfpmz0U/s320/63ad9301-3cdc-4956-9826-aabba17021fc.png',
+      uncomfortable: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj57HEfWxF7k2EwEY2qiX4w7kzhf_WXbhygRHNgOFmCDsn67USVncB37DrIKASpUpLVv055XzrPjQcR-Evv2AdXX7cpleZypH1JoEsnmG3MyBnI5i7Ae2EhQxIO0GMir2PQvsZo-hUEGkGU3Z_lacDG0a7nkNBWNBjBATObetW78RyvVvomEXFQoxJfnF6i/s320/38dbc72f-adc5-4736-a151-3f9de6e6a7d1-removebg-preview.png',
+      shy: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhsyGAEZ9nzbS8RpxfWa5TMZz5QWoR7wFj_j5qHGNGnu6qDQRjpyjwA-VE-pXfjG-ShHfqyUIzRiYsF74dfEw0tAgOVL6pspbfwe6LJczWMEJI87kW-PuI3qqsEYX8o0RgDageRemNCGCMX6iwt8jI-LbJEUcUf53nvIR71oFpZeWU41dXjC7TYkszEO_am/s320/image-removebg-preview%20(20).png',
+      happy: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh9la3On91cbXMdMpHtbNBY8KA2EujruvL9NhjzrQ0C-97z5-QzPU5rNdvUSswIIYDrzkLmlr-VJWydfC8sDp5PjBamztTsqMJZGwmnR2EzdOD_8VNKqBepo32j8B0gTZwRiMo-iH8U7BD4vOjK-pNxiY_BRBxvAa1hnUq-0QSKwUQVClJ2Ff3BPj3iTWo6/s320/image-removebg-preview%20(21).png',
+      sad: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjP6B6yiU2kgRbV-RFjrGi02YfUOAW28T4658XGJg2UDKpmeUEQtHzT62WB5XKAubxcSCnBHXWt9tlvJhotsgL1bq6rmNjPBL2LdbaDmgtkFvkyhVZrsgGGTHT6SklZJFwvZQNTHc-oX4PDFuvRbxGC-_GNlntAoMgJYEoIeNJfbc3vMK8v6zfU3Zh-bXBq/s320/image-removebg-preview%20(22).png',
+      angry: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg3sQ77kGYV_0_uNMV82EiRzpNjr60lctM41yl8QWFixf9affV9kW1-HCFeR48ku8X9oDFlgWiGEgPDd9syFLMZgmBC9OmKsDFCFLqlIfZ4Aj42SaTWr_Qqxf70svG-A0e_L0jgGtOzFHqOllxzY5p4gL8yAZ17DyqoHnPinRmCzpoi-MunbRscLZGO3iRR/s320/image-removebg-preview%20(23).png',
+      surprised: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEilnbH9h6X0cwNyy2X5_63Ml6DVktg3IdS3go4Zk8krhNhhLlsjEMVGY-PRKFjcPWiQ4LgmIQhhnz9HqzVA9LKdJUUJuR2GQBxw0hPPXXwBgAnzmEdWZz5EEP-meZBFdYI_dfcNjH0KEVaDzyxPgswnAd8ym3srLwCtE7js9lBUo-batFsJWzsYDDKNa57n/s320/3fdf9aee-6f8e-4324-a71a-6a23b6b6dd4e.png',
+      romantic: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgOSmp99WsQKTTi6f7L0soPMDlqptx4PNyIkzgqvrP3Zn5qrkpw5Tv8VWGKnRwq7cVFfI61_uGiyBX0qR-b7ayAmAOgMQrUOjsutXavbOzkgHjou1S4gr4holfvasFcwdNyc7PYEdQDbnyt3bm4j7MM9glTl7jN6kzIMESHWYa4dQumAkswcoRBIdWY7NH2/s320/459765c8-bc95-4be8-a9da-7fd2cb19b402.png',
+    };
+
+    // preload images
+    const _images = {};
+    Object.entries(ASSETS).forEach(([k,v])=>{ const i=new Image(); i.src=v; _images[k]=i; });
+
+    /* ------------------ Simple VN engine state ------------------ */
+    const state = {
+      playerName: '',
+      affection: 0,
+      sceneIndex: 0,
+      lineIndex: 0,
+      currentLines: [],
+      currentChoices: null,
+      bg: ASSETS.bg_classroom,
+      sprite: ASSETS.neutral
+    };
+
+    /* Scenes definition (basic flow modeled from your acts) */
+    const SCENES = [
+      {
+        id: 'intro',
+        bg: 'bg_classroom',
+        lines:[
+          {speaker:'Sistema',text:'Um dia comum na escola. O professor abre a sala e anuncia uma nova aluna.'},
+          {speaker:'Professor',text:'\u2014 Turma, hoje temos uma nova aluna.'},
+          {speaker:'Narrador',text:'Ela entra devagar, evita contato visual e se senta no fundo da sala.'}
+        ],
+        choices:[
+          {text:'Ignorar e continuar a aula',action:()=>{ gotoScene('observe'); }},
+          {text:'Tentar puxar papo no intervalo',action:()=>{ gotoScene('first_contact'); }},
+          {text:'Observar discretamente',action:()=>{ gotoScene('observe'); }}
+        ]
+      },
+
+      { id:'observe', bg:'bg_classroom', lines:[{speaker:'Sistema',text:'Você observa discretamente. Ela parece carregar um livro como escudo.'},{speaker:'Narrador',text:'O tempo passa. Talvez você tente falar com ela outra hora.'}], choices:[{text:'Ir para o intervalo', action:()=>gotoScene('yard')}]},
+
+      { id:'first_contact', bg:'bg_yard', lines:[{speaker:'Você',text:'Oi, eu sou {playerName}. Posso me sentar aqui?'},{speaker:'Ela',text:'...Tudo bem.'}], choices:[
+        {text:'Fazer uma piada leve', action:()=>{ state.affection+=1; gotoScene('approach'); }},
+        {text:'Falar sobre você primeiro', action:()=>{ state.affection+=1; gotoScene('approach'); }},
+        {text:'Dar espaço e recuar', action:()=>{ gotoScene('observe'); }}
+      ]},
+
+      { id:'approach', bg:'bg_library', lines:[{speaker:'Narrador',text:'Vocês acabam se esbarrando na biblioteca. Ela parece nervosa, mas sorri discretamente.'},{speaker:'Ela',text:'Eu me mudei recentemente. Não costumo... confiar fácil.'}], choices:[
+        {text:'Insistir e tentar amizade', action:()=>{ state.affection+=2; gotoScene('bonding'); }},
+        {text:'Dar espaço, mostrar interesse depois', action:()=>{ state.affection+=1; gotoScene('bonding'); }}
+      ]},
+
+      { id:'bonding', bg:'bg_corridor', lines:[{speaker:'Narrador',text:'Com pequenos encontros, ela começa a se abrir aos poucos.'},{speaker:'Ela',text:'Obrigado por não me tratar diferente.'}], choices:[
+        {text:'Defender quando zoam ela', action:()=>{ state.affection+=3; gotoScene('after_defend'); }},
+        {text:'Ficar quieto', action:()=>{ state.affection-=1; gotoScene('after_quiet'); }},
+        {text:'Mudar de assunto', action:()=>{ gotoScene('after_change'); }}
+      ]},
+
+      { id:'after_defend', bg:'bg_corridor', lines:[{speaker:'Narrador',text:'Você a defende. Ela parece aliviada e mais próxima.'},{speaker:'Ela',text:'...Obrigada. Você é diferente.'}], choices:[{text:'Continuar', action:()=>gotoScene('romance_check')}]},
+      { id:'after_quiet', bg:'bg_corridor', lines:[{speaker:'Narrador',text:'Você fica quieto. Ela se afasta um pouco e fica pensativa.'}], choices:[{text:'Continuar', action:()=>gotoScene('romance_check')}]},
+      { id:'after_change', bg:'bg_corridor', lines:[{speaker:'Narrador',text:'Você muda de assunto, tentando evitar conflito. Ela aprecia a cautela.'}], choices:[{text:'Continuar', action:()=>gotoScene('romance_check')}]},
+
+      { id:'romance_check', bg:'bg_street', lines:[{speaker:'Narrador',text:'Dias se passam. O vínculo entre vocês depende das suas escolhas.'}], choices:[
+        {text:'Ver resultado', action:()=>{ gotoScene('ending'); }}
+      ]},
+
+      { id:'ending', bg:'bg_street', lines:[
+        {speaker:'Narrador',text:'Resultado final:'},
+        {speaker:'Sistema',text:()=>{
+          if(state.affection>=5) return 'Afeto alto. Ela espera você após a aula e revela segredos. Você pode confessar seus sentimentos.';
+          if(state.affection>=2) return 'Afeto médio. Vocês são bons amigos; a conexão é verdadeira, mas contida.';
+          return 'Afeto baixo. Ela se distancia e a história termina com a sensação de algo perdido.';
+        }}
+      ], choices:[
+        {text:'Confessar (se possível)',action:()=>{ if(state.affection>=5) gotoScene('confess'); else { alert('Ainda não é o momento...'); }}},
+        {text:'Fim', action:()=>{ gotoScene('credits'); }}
+      ]},
+
+      { id:'confess', bg:'bg_street', lines:[{speaker:'Você',text:'Eu gosto de você.'},{speaker:'Ela',text:'...Eu também. Nunca pensei que diria isso.'}], choices:[{text:'Final romântico', action:()=>gotoScene('credits')}], },
+
+      { id:'credits', bg:'bg_classroom', lines:[{speaker:'Sistema',text:'Obrigado por jogar! Se quiser, reinicie e explore outras rotas.'}], choices:[{text:'Reiniciar',action:()=>{ resetGame(); }}]}
+    ];
+
+    /* ------------------ DOM references ------------------ */
+    const bgEl = document.getElementById('bg');
+    const spriteContainer = document.getElementById('spriteContainer');
+    const playerNameInput = document.getElementById('playerName');
+    const playBtn = document.getElementById('playBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const choicesEl = document.getElementById('choices');
+    const charNameEl = document.getElementById('charName');
+    const textEl = document.getElementById('text');
+    const affectionLabel = document.getElementById('affectionLabel');
+    const continueBtn = document.getElementById('continueBtn');
+    const saveBtn = document.getElementById('saveBtn');
+    const loadBtn = document.getElementById('loadBtn');
+    const resetBtn = document.getElementById('resetBtn');
+
+    /* ------------------ Utility functions ------------------ */
+    function setBG(key){ state.bg = ASSETS[key]; bgEl.style.backgroundImage = `url('${state.bg}')`; }
+    function setSprite(url){ state.sprite = url; spriteContainer.innerHTML = `<img src="${url}" alt="char" class='fadeIn'>`; }
+    function updateAffection(){ affectionLabel.textContent = `Afeto: ${state.affection}`; }
+
+    function findScene(id){ return SCENES.find(s=>s.id===id); }
+
+    /* ------------------ Scene navigation ------------------ */
+    function gotoScene(id){
+      const scene = findScene(id);
+      if(!scene) return console.warn('Cena não encontrada', id);
+      // set background
+      setBG(scene.bg || 'bg_classroom');
+      // prepare lines
+      state.currentLines = scene.lines.map(l=>({speaker:l.speaker,text:typeof l.text==='function'?l.text():l.text}));
+      state.lineIndex = 0;
+      state.currentChoices = scene.choices || null;
+      renderLine();
+    }
+
+    function renderLine(){
+      const line = state.currentLines[state.lineIndex];
+      if(!line){ // lines finished -> show choices
+        showChoices();
+        return;
+      }
+      charNameEl.textContent = line.speaker;
+      // dynamic replacement for {playerName}
+      const text = line.text.replaceAll('{playerName}', state.playerName || 'Você');
+      // simple typewriter effect
+      typeWriter(textEl, text, ()=>{
+        // after typing, advance on click or next
+      });
+      // set sprite/expression heuristics based on speaker or keywords
+      setExpressionForLine(line);
+    }
+
+    let typingTimer = null;
+    function typeWriter(targetEl, text, cb){
+      if(typingTimer) clearInterval(typingTimer);
+      targetEl.textContent = '';
+      let i=0;
+      typingTimer = setInterval(()=>{
+        i++; targetEl.textContent = text.slice(0,i);
+        if(i>=text.length){ clearInterval(typingTimer); typingTimer=null; cb&&cb(); }
+      },18);
+    }
+
+    function showChoices(){
+      choicesEl.innerHTML = '';
+      if(state.currentChoices && state.currentChoices.length){
+        state.currentChoices.forEach((c,idx)=>{
+          const b=document.createElement('button'); b.className='choiceBtn'; b.textContent=c.text;
+          b.onclick=()=>{ c.action(); updateAffection(); updateAffection(); }; // note: update twice to ensure label update (harmless)
+          choicesEl.appendChild(b);
+        });
+        document.getElementById('controls').classList.add('hidden');
+      } else {
+        // no choices -> just advance to next scene if exists
+        document.getElementById('controls').classList.remove('hidden');
+      }
+    }
+
+    function advanceLine(){
+      if(typingTimer) { clearInterval(typingTimer); typingTimer=null; const line = state.currentLines[state.lineIndex]; textEl.textContent = typeof line.text === 'string' ? line.text.replaceAll('{playerName}', state.playerName||'Você') : line.text; return; }
+      state.lineIndex++;
+      if(state.lineIndex < state.currentLines.length) renderLine(); else showChoices();
+    }
+
+    function setExpressionForLine(line){
+      // naive heuristics: speaker names / text keywords
+      const txt = (line.text||'').toLowerCase();
+      if(line.speaker === 'Ela'){
+        if(txt.includes('obrigad') || txt.includes('obriga')) setSprite(ASSETS.happy);
+        else if(txt.includes('...') || txt.length<6) setSprite(ASSETS.uncomfortable);
+        else if(txt.includes('gosto')||txt.includes('também')) setSprite(ASSETS.romantic);
+        else setSprite(ASSETS.neutral);
+      } else if(line.speaker === 'Você'){
+        setSprite(ASSETS.neutral);
+      } else {
+        setSprite(ASSETS.neutral);
+      }
+    }
+
+    /* ------------------ Buttons & events ------------------ */
+    playBtn.onclick = ()=>{
+      const p = playerNameInput.value.trim(); if(p) state.playerName=p; else state.playerName='Você';
+      startGame();
+    };
+    nextBtn.onclick = ()=>{ advanceLine(); };
+    textEl.onclick = ()=>{ advanceLine(); };
+
+    continueBtn.onclick = ()=>{ const s = loadFromStorage(); if(s) { Object.assign(state,s); gotoScene(state.currentScene||'intro'); } else alert('Nenhum salvamento encontrado.'); };
+    saveBtn.onclick = ()=>{ saveToStorage(); };
+    loadBtn.onclick = ()=>{ const s = loadFromStorage(); if(s){ Object.assign(state,s); updateAffection(); setBGKeyByUrl(state.bg); setSprite(state.sprite); gotoScene(state.currentScene||'intro'); } else alert('Nenhum salvamento encontrado.'); };
+    resetBtn.onclick = ()=>{ if(confirm('Reiniciar o jogo?')) resetGame(); };
+
+    function setBGKeyByUrl(url){ bgEl.style.backgroundImage = `url('${url}')`; }
+
+    /* ------------------ Save / Load ------------------ */
+    function saveToStorage(){
+      const data = { playerName: state.playerName, affection: state.affection, currentScene: state.sceneIndex, bg: state.bg, sprite: state.sprite };
+      localStorage.setItem('vn_save', JSON.stringify(data));
+      alert('Jogo salvo no armazenamento local.');
+    }
+    function loadFromStorage(){ const s = localStorage.getItem('vn_save'); return s?JSON.parse(s):null; }
+
+    /* ------------------ Game control ------------------ */
+    function startGame(){
+      // initial scene
+      state.affection = 0; updateAffection();
+      gotoScene('intro');
+    }
+
+    function resetGame(){ localStorage.removeItem('vn_save'); state.playerName=''; state.affection=0; playerNameInput.value=''; updateAffection(); gotoScene('intro'); }
+
+    // On page load show menu's default bg
+    setBG('bg_classroom'); setSprite(ASSETS.neutral);
+    updateAffection();
+
+    // expose a helper to go to named scene from actions
+    function gotoSceneById(id){ const s = findScene(id); if(!s) return; // set index
+      const idx = SCENES.indexOf(s); if(idx>=0) state.sceneIndex=idx; gotoScene(id);
+    }
+    // Re-map gotoScene to ensure we store sceneIndex
+    const originalGoto = gotoScene;
+    gotoScene = function(id){ const s = findScene(id); if(!s) return; state.sceneIndex = SCENES.indexOf(s); originalGoto(id); state.currentScene = id; };
+
+    // small auto-update of affection label
+    setInterval(()=>{ updateAffection(); },500);
+
+    // keyboard navigation
+    window.addEventListener('keydown', e=>{ if(e.key===' ' || e.key==='Enter') advanceLine(); });
+
+    // initial render
+    renderLine();
+
+  </script>
+</body>
+</html>
