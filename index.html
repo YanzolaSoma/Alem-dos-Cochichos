@@ -1,80 +1,62 @@
+chat, consegue aumentar o tamanho das sprites da personagem? ela ta muito pequena aquikkkk, faça o codigo todo completo já
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>Minha Visual Novel</title>
+  <meta charset="UTF-8" />
+  <title>Minha Visual Novel — Demo Expandida</title>
   <style>
-    body {
-      margin: 0;
-      background: black;
-      font-family: Arial, sans-serif;
-      color: white;
-      overflow: hidden;
+    :root{
+      --accent:#ff88bb;
+      --panel: rgba(8,8,10,0.78);
+      --bg:#0f0f10;
+      --text:#fff;
     }
-    #mainMenu, #gameUI {
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      background: black;
-    }
-    #background {
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background-size: cover;
-      background-position: center;
-      z-index: 0;
-    }
-    #char {
-      position: absolute;
-      bottom: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      max-height: 90%;
-      z-index: 1;
-      opacity: 0;
-      transition: opacity 0.3s;
-    }
-    #dialogueBox {
-      position: absolute;
-      bottom: 0;
-      width: 100%;
-      background: rgba(0,0,0,0.7);
-      padding: 20px;
-      box-sizing: border-box;
-      display: none;
-      z-index: 2;
-    }
-    #choices {
-      margin-top: 10px;
-      display: none;
-    }
-    #choices button {
-      margin: 5px;
-      padding: 10px 20px;
-      background: #444;
-      color: white;
-      border: none;
-      cursor: pointer;
-      border-radius: 5px;
-    }
-    #choices button:hover {
-      background: #666;
-    }
+    html,body{height:100%; margin:0; background:var(--bg); color:var(--text); font-family: Inter, Arial, sans-serif; overflow:hidden;}
+    #mainMenu, #gameUI{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; flex-direction:column;}
+    #mainMenu{z-index:40; background: url("https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgbmefjKbkNBKcqJy7UdSK882TD8EE8O4e30uqSUaAIMQqKgXUzL6tOq4OwMrBdgyaCmUVv76tPUoDLQ_EbLYc8aM8NVRDp6u0RaBNTWOfd0Qm52APoExfVmhG9jyGW3JqcE_R_cJQuMI6Oo4xdybpjhG43h8rABRZyTxNwzDpzkIx7EGnBtlb8GiGzamz3/s320/7fd3a151-778d-40e6-a9ce-d59fb56b6595.png") center/cover no-repeat;}
+    #menuInner{background:linear-gradient(180deg, rgba(0,0,0,0.6), rgba(0,0,0,0.85)); padding:30px; border-radius:12px; text-align:center;}
+    #menuInner h1{margin:0 0 12px 0; font-size:34px;}
+    .menuBtn{padding:12px 28px; margin:8px; border-radius:10px; border:2px solid var(--accent); background:rgba(0,0,0,0.5); color:var(--text); cursor:pointer; font-size:16px;}
+    .menuBtn:hover{background:var(--accent); color:black;}
+
+    /* game UI */
+    #background{position:absolute; inset:0; background:#222 center/cover no-repeat; z-index:0; transition:background-image .35s ease;}
+    #char{position:absolute; bottom:-2%; left:50%; transform:translateX(-50%); max-height:95%; z-index:1; opacity:0; transition:opacity .25s ease;}
+    #hud{position:absolute; top:12px; left:12px; z-index:30; display:flex; gap:12px; align-items:center;}
+    #hud .box{background:var(--panel); padding:8px 12px; border-radius:8px; font-size:14px;}
+    #dialogueBox{position:absolute; left:6%; right:6%; bottom:4%; background:var(--panel); padding:18px; border-radius:12px; z-index:20; box-sizing:border-box; display:none;}
+    #dialogue{font-size:18px; line-height:1.4; min-height:48px;}
+    #choices{margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;}
+    #choices button{padding:10px 14px; border-radius:8px; border:none; cursor:pointer; background:var(--accent); color:black; font-weight:600;}
+    #choices button:hover{transform:translateY(-2px);}
+
+    /* small helper */
+    .small{font-size:13px; opacity:.9;}
   </style>
 </head>
 <body>
 
   <div id="mainMenu">
-    <h1>🌸 Minha Visual Novel 🌸</h1>
-    <button onclick="startGame()">Iniciar</button>
+    <div id="menuInner">
+      <h1>🌸 Além dos Cochichos — Demo</h1>
+      <p class="small">Visual Novel — Demo expandida com escolhas e finais</p>
+      <div style="margin-top:18px">
+        <button class="menuBtn" onclick="startGame()">Novo Jogo</button>
+        <button class="menuBtn" onclick="loadState()">Carregar</button>
+      </div>
+      <p class="small" style="margin-top:10px">Avance: <strong>Espaço</strong> — Escolhas: clique no botão</p>
+    </div>
   </div>
 
   <div id="gameUI" style="display:none;">
     <div id="background"></div>
-    <img id="char" src="">
+    <img id="char" src="" alt="char">
+    <div id="hud" style="display:none;">
+      <div class="box">Além dos Cochichos</div>
+      <div class="box">Afeto: <span id="affectionValue">0</span></div>
+      <div class="box small">Pressione Espaço para avançar</div>
+    </div>
+
     <div id="dialogueBox">
       <div id="dialogue"></div>
       <div id="choices"></div>
@@ -82,11 +64,13 @@
   </div>
 
 <script>
+/* ---------- IMAGENS (coladas por você) ---------- */
+
 const SPRITES = {
   neutral: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhdG6e5sjfiLbvSbtVGxFIX_LmGxXh7wRWzg_ZgqxeDvxsAXAldYsgWPhyphenhyphentlbmJX4ZQnGl7ypGO6sed3JdnGqt3KC_pGsOXgD3TKnTsif8dK_gMBcwJ-8sD4IxKyzQamy7dIQSZhez4dSYQ4NH7X9SBjvIWVhREIkfctaoJQGg-qHMGQvtgJ9bsYpfpmz0U/s320/63ad9301-3cdc-4956-9826-aabba17021fc.png",
   uncomfortable: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj57HEfWxF7k2EwEY2qiX4w7kzhf_WXbhygRHNgOFmCDsn67USVncB37DrIKASpUpLVv055XzrPjQcR-Evv2AdXX7cpleZypH1JoEsnmG3MyBnI5i7Ae2EhQxIO0GMir2PQvsZo-hUEGkGU3Z_lacDG0a7nkNBWNBjBATObetW78RyvVvomEXFQoxJfnF6i/s320/38dbc72f-adc5-4736-a151-3f9de6e6a7d1-removebg-preview.png",
   embarrassed: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhsyGAEZ9nzbS8RpxfWa5TMZz5QWoR7wFj_j5qHGNGnu6qDQRjpyjwA-VE-pXfjG-ShHfqyUIzRiYsF74dfEw0tAgOVL6pspbfwe6LJczWMEJI87kW-PuI3qqsEYX8o0RgDageRemNCGCMX6iwt8jI-LbJEUcUf53nvIR71oFpZeWU41dXjC7TYkszEO_am/s320/image-removebg-preview%20(20).png",
-  shy: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh9la3On91cbXMdMpHtbNBY8KA2EujruvL9NhjzrQ0C-97z5-QzPU5rNdvUSswIIYDrzkLmlr-VJWydfC8sDp5PjBamztTsqMJZGwmnR2EzdOD_8VNKqBepo32j8B0gTZwRiMo-iH8U7BD4vOjK-pNxiY_BRBxvAa1hnUq-0QSKwUQVClJ2Ff3BPj3iTWo6/s320/image-removebg-preview%20(21).png",
+  happy: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh9la3On91cbXMdMpHtbNBY8KA2EujruvL9NhjzrQ0C-97z5-QzPU5rNdvUSswIIYDrzkLmlr-VJWydfC8sDp5PjBamztTsqMJZGwmnR2EzdOD_8VNKqBepo32j8B0gTZwRiMo-iH8U7BD4vOjK-pNxiY_BRBxvAa1hnUq-0QSKwUQVClJ2Ff3BPj3iTWo6/s320/image-removebg-preview%20(21).png",
   sad: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjP6B6yiU2kgRbV-RFjrGi02YfUOAW28T4658XGJg2UDKpmeUEQtHzT62WB5XKAubxcSCnBHXWt9tlvJhotsgL1bq6rmNjPBL2LdbaDmgtkFvkyhVZrsgGGTHT6SklZJFwvZQNTHc-oX4PDFuvRbxGC-_GNlntAoMgJYEoIeNJfbc3vMK8v6zfU3Zh-bXBq/s320/image-removebg-preview%20(22).png",
   angry: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg3sQ77kGYV_0_uNMV82EiRzpNjr60lctM41yl8QWFixf9affV9kW1-HCFeR48ku8X9oDFlgWiGEgPDd9syFLMZgmBC9OmKsDFCFLqlIfZ4Aj42SaTWr_Qqxf70svG-A0e_L0jgGtOzFHqOllxzY5p4gL8yAZ17DyqoHnPinRmCzpoi-MunbRscLZGO3iRR/s320/image-removebg-preview%20(23).png",
   surprised: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEilnbH9h6X0cwNyy2X5_63Ml6DVktg3IdS3go4Zk8krhNhhLlsjEMVGY-PRKFjcPWiQ4LgmIQhhnz9HqzVA9LKdJUUJuR2GQBxw0hPPXXwBgAnzmEdWZz5EEP-meZBFdYI_dfcNjH0KEVaDzyxPgswnAd8ym3srLwCtE7js9lBUo-batFsJWzsYDDKNa57n/s320/3fdf9aee-6f8e-4324-a71a-6a23b6b6dd4e.png",
@@ -101,110 +85,395 @@ const BACKGROUNDS = {
   street: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjU03KO_GkbUfBWgVQiDfd7A0r3mcSVdQGuQOa1elc0IZ59bu9Cdr4NAeaVQ9fZM7ScgxW8MGIaeLHyT57OzN95EZF62pGh0lfeEFaMiV52XLhSwSi6Ut4bljWRV4X3ApFX46IV40iIGZl6TuVUdAiOYSaOexa3w101uCb48A2u9cn_ECCInrM1EJlHIvQw/s320/f08408c7-9ab7-49f4-bea8-96c35ff47669.png"
 };
 
+/* ---------- STORY (muito maior e ramificações) ---------- */
+
+/*
+Structure:
+- SCENES is an array. Each scene can have:
+  { bg, sprite, text, choice: [{text, next, affection}] }
+- If scene has 'choice', advancement by space is blocked until player clicks a choice.
+- When we hit an ending scene (scene.type==="ending"), we evaluate affection and show final.
+*/
+
 const SCENES = [
+  // 0 intro
   { bg:"classroom", sprite:"neutral", text:"Um dia comum na escola. O professor ainda não chegou." },
+
+  // 1 new girl appears
   { bg:"classroom", sprite:"embarrassed", text:"A porta se abre devagar... uma aluna nova entra, todos olham." },
   { bg:"classroom", sprite:"shy", text:"Ela fica em silêncio, parecendo nervosa, e te encara por um instante." },
   { bg:"classroom", sprite:"uncomfortable", text:"A garota olha ao redor, como se procurasse um lugar para se sentar." },
   { bg:"classroom", sprite:"neutral", text:"Você levanta a mão e oferece a cadeira ao lado da sua." },
   { bg:"classroom", sprite:"embarrassed", text:"Ela se aproxima, corada, e se senta timidamente ao seu lado." },
-  { bg:"classroom", sprite:"shy", text:"O professor começa a aula, mas você sente o olhar dela em você." },
+
+  // 6 teacher arrives, scene change to later
+  { bg:"classroom", sprite:"shy", text:"A aula passa devagar; você percebe que ela risca a caneta no caderno, inquieta." },
   { bg:"hallway", sprite:"shy", text:"O sinal toca. No corredor, você a encontra novamente.", choice:[
-    {text:"Puxar conversa", next:8, affection:+1},
-    {text:"Apenas acenar", next:9, affection:0}
-  ]},
+      { text:"Puxar conversa — 'Tudo bem?'", next:9, affection:+1 },
+      { text:"Apenas acenar e seguir", next:10, affection:0 }
+    ]
+  },
+
+  // 9 you talk
   { bg:"hallway", sprite:"embarrassed", text:"— O-oi... obrigada por antes — ela diz, desviando o olhar." },
-  { bg:"hallway", sprite:"neutral", text:"Ela sorri timidamente e segue andando." },
-  { bg:"library", sprite:"neutral", text:"Mais tarde, na biblioteca, você a encontra folheando um livro.", choice:[
-    {text:"Perguntar sobre o livro", next:11, affection:+1},
-    {text:"Ficar em silêncio", next:12, affection:0}
-  ]},
-  { bg:"library", sprite:"embarrassed", text:"Ela mostra a capa, corada: é um romance popular." },
-  { bg:"library", sprite:"sad", text:"Ela parece decepcionada por você não puxar assunto." },
-  { bg:"courtyard", sprite:"happy", text:"No pátio, o sol da tarde ilumina vocês.", choice:[
-    {text:"Sentar ao lado dela", next:14, affection:+1},
-    {text:"Passar direto", next:15, affection:-1}
-  ]},
-  { bg:"courtyard", sprite:"romantic", text:"Ela sorri, parecendo feliz por sua companhia." },
-  { bg:"courtyard", sprite:"sad", text:"Ela abaixa a cabeça, desapontada." },
-  { bg:"street", sprite:"romantic", text:"Na saída da escola, vocês caminham juntos." },
-  { bg:"street", sprite:"surprised", text:"De repente, ela segura sua mão por um instante!" },
-  { bg:"street", sprite:"embarrassed", text:"Corada, ela solta rápido e olha pro lado." },
-  { bg:"street", sprite:"romantic", text:"Fim da Demo ❤️" }
+  { bg:"hallway", sprite:"neutral", text:"Ela sorri timidamente e responde seu nome: 'Mika'." },
+
+  // 10 you didn't talk
+  { bg:"hallway", sprite:"neutral", text:"Você acena e segue. Durante o recreio, sente que perdeu uma chance." },
+
+  // branching to library meet
+  { bg:"library", sprite:"neutral", text:"Mais tarde, na biblioteca, você a encontra folheando um livro." , choice:[
+      { text:"Perguntar sobre o livro", next:13, affection:+1 },
+      { text:"Ficar em silêncio e observar", next:14, affection:0 }
+    ]
+  },
+
+  // 13 ask about book
+  { bg:"library", sprite:"embarrassed", text:"— É... um romance antigo. Eu gosto de coisas calmas — ela sussurra, corando." },
+  { bg:"library", sprite:"romantic", text:"Vocês conversam sobre personagens, e ela relaxa perto de você." },
+
+  // 14 silent
+  { bg:"library", sprite:"sad", text:"Ela fecha o livro leve e volta a ler. Você sente um frio na barriga por não ter falado." },
+
+  // courtyard - choice influences affection more
+  { bg:"courtyard", sprite:"happy", text:"No pátio, o sol da tarde ilumina os bancos. Ela parece nervosa.", choice:[
+      { text:"Sentar ao lado dela e oferecer um lanche", next:17, affection:+2 },
+      { text:"Ignorar e falar com os amigos", next:18, affection:-1 }
+    ]
+  },
+
+  // 17 sit and offer snack
+  { bg:"courtyard", sprite:"romantic", text:"Ela sorri surpreso: 'Você trouxe...? Obrigada, estava com fome.' Ela come e se abre sobre a família.'"},
+  { bg:"courtyard", sprite:"shy", text:"Mika confessa que se mudou recentemente e sente falta de antigos amigos." },
+
+  // 18 ignore
+  { bg:"courtyard", sprite:"sad", text:"Ela abaixa a cabeça. Você vê nos olhos dela uma tristeza que te incomoda depois." },
+
+  // 19 after school walk options
+  { bg:"street", sprite:"romantic", text:"Na saída da escola, vocês caminham juntos. A rua está calma.", choice:[
+      { text:"Convidá-la para um café após as aulas", next:21, affection:+1 },
+      { text:"Dizer que tem planos e ir embora", next:22, affection:-1 },
+      { text:"Sugerir um encontro em grupo com amigos", next:23, affection:0 }
+    ]
+  },
+
+  // 21 cafe
+  { bg:"street", sprite:"surprised", text:"— Um café? — ela pergunta surpresa, corando: 'Eu aceito!'" },
+  { bg:"street", sprite:"romantic", text:"No café, a conversa flui. Você descobre gostos semelhantes." },
+
+  // 22 leave
+  { bg:"street", sprite:"embarrassed", text:"— Tudo bem — ela diz baixinho. Você se pergunta se deveria ter ficado." },
+
+  // 23 group
+  { bg:"street", sprite:"neutral", text:"— Um encontro com amigos pode ser legal — ela sorri timidamente, aliviada." },
+
+  // mid-game small conflict
+  { bg:"classroom", sprite:"angry", text:"Na semana seguinte, um colega provoca Mika por ser nova. Ela fica nervosa." , choice:[
+      { text:"Intervir e defender Mika", next:27, affection:+2 },
+      { text:"Ficar calado por medo", next:28, affection:-2 }
+    ]
+  },
+
+  // 27 defend
+  { bg:"classroom", sprite:"angry", text:"Você levanta a voz: 'Para com isso.' O provocador recua; Mika te olha com admiração." },
+  { bg:"classroom", sprite:"romantic", text:"Depois da aula, Mika deixa um bilhete agradecendo." },
+
+  // 28 silent
+  { bg:"classroom", sprite:"sad", text:"Você não diz nada. Mika parece magoada quando o colega ri." },
+  { bg:"classroom", sprite:"sad", text:"Mais tarde, você a encontra distante, evitando olhar para você." },
+
+  // optional hangout scene (depending on earlier choices)
+  { bg:"courtyard", sprite:"happy", text:"Convite aceito — vocês marcam de estudar juntos na biblioteca.", choice:[
+      { text:"Estudar com atenção", next:31, affection:+1 },
+      { text:"Ficar só no celular e conversar pouco", next:32, affection:-1 }
+    ]
+  },
+
+  // 31 good study
+  { bg:"library", sprite:"neutral", text:"A sessão de estudos é produtiva. Mika comenta que aprende bem com você." },
+  { bg:"library", sprite:"romantic", text:"Vocês riem de uma parte do livro e a tensão se desfaz." },
+
+  // 32 bad study
+  { bg:"library", sprite:"embarrassed", text:"Você passa mais tempo no celular. Mika parece desapontada, mas tenta disfarçar." },
+
+  // build to final moments - several branches converge
+  { bg:"street", sprite:"surprised", text:"Chega perto do final do semestre: um festival escolar será realizado.", choice:[
+      { text:"Oferecer companhia para o festival", next:35, affection:+1 },
+      { text:"Ignorar, está cansado", next:36, affection:-1 },
+      { text:"Convidar ela para a apresentação que você vai acompanhar", next:37, affection:+1 }
+    ]
+  },
+
+  // 35 festival yes
+  { bg:"courtyard", sprite:"romantic", text:"No festival, as luzes, a comida e as barracas criam um clima mágico." },
+  { bg:"courtyard", sprite:"romantic", text:"Mika agarra sua mão por impulso e sorri — vocês conversam como nunca." },
+
+  // 36 festival no
+  { bg:"street", sprite:"sad", text:"Você não vai. Devolve um convite por mensagem. Mika responde algo curto." },
+
+  // 37 invite to a show
+  { bg:"classroom", sprite:"embarrassed", text:"Ela aceita com alegria: 'Adoraria ir com você'." },
+
+  // conflict before ending: a mal-entendido
+  { bg:"classroom", sprite:"uncomfortable", text:"Um boato começa a circular: dizem que você só quer atenção. Mika fica confusa.", choice:[
+      { text:"Explicar a verdade sinceramente", next:41, affection:+2 },
+      { text:"Rir e não levar a sério", next:42, affection:-1 }
+    ]
+  },
+
+  // 41 honest explanation
+  { bg:"classroom", sprite:"romantic", text:"Você explica que se importa e que as mentiras te incomodam. Mika chora de alívio." },
+
+  // 42 brush off
+  { bg:"classroom", sprite:"angry", text:"Você ri e tenta minimizar; Mika se afasta, magoada." },
+
+  // lead to endings indices: we'll use sceneIndex beyond array to trigger endings logic
+  // a scene that signals 'final decision moment' (index 44)
+  { bg:"street", sprite:"neutral", text:"Semana final. Mika te encontra sozinho e olha nos seus olhos: 'Tem algo a dizer?'", choice:[
+      { text:"Dizer como se sente (declaração)", next:1000, affection:+2 },
+      { text:"Não falar nada e esperar", next:1001, affection:0 },
+      { text:"Falar algo genérico, sem compromisso", next:1002, affection:-1 }
+    ]
+  },
+
+  // filler placeholders up to index 44 (we already exceed but it's OK — they won't be used)
 ];
+
+/* ---------- ENDINGS ---------- */
+/*
+We will map shortcut next values (1000,1001,1002) to endings.
+1000 -> strong confession path
+1001 -> neutral path
+1002 -> weak/no commitment path
+*/
+
+function setSprite(key){
+  const char = document.getElementById("char");
+  if(!key){ char.style.opacity = 0; return; }
+  char.src = SPRITES[key] || "";
+  char.style.opacity = 1;
+}
+function setBackground(key){
+  const bg = document.getElementById("background");
+  bg.style.backgroundImage = `url('${BACKGROUNDS[key] || BACKGROUNDS.classroom}')`;
+}
+function setDialogue(text){
+  document.getElementById("dialogue").textContent = text;
+}
+function updateHud(){
+  document.getElementById("affectionValue").textContent = state.affection;
+  document.getElementById("hud").style.display = "flex";
+}
+
+/* ---------- STATE ---------- */
 
 let state = { sceneIndex: 0, affection: 0 };
 
-function setSprite(key){
-  const char=document.getElementById("char");
-  if(!key){ char.style.opacity=0; return; }
-  char.src=SPRITES[key] || SPRITES.neutral;
-  char.style.opacity=1;
-}
-function setBackground(key){
-  document.getElementById("background").style.backgroundImage=
-    `url('${BACKGROUNDS[key]||BACKGROUNDS.classroom}')`;
-}
-function setDialogue(text){
-  document.getElementById("dialogue").textContent=text;
-}
+/* ---------- RENDER ---------- */
 
 function renderScene(){
-  const scene = SCENES[state.sceneIndex];
-  if(!scene){
-    setDialogue("Fim da história!");
+  // special endings shortcuts
+  const idx = state.sceneIndex;
+
+  // if using special endings
+  if(idx === 1000 || idx === 1001 || idx === 1002){
+    renderEnding(idx);
     return;
   }
-  document.getElementById("dialogueBox").style.display="block";
+
+  const scene = SCENES[idx];
+  if(!scene){
+    // fallback end
+    renderEnding(null);
+    return;
+  }
+
+  // show UI
+  document.getElementById("dialogueBox").style.display = "block";
+  document.getElementById("gameUI").style.display = "block";
   setBackground(scene.bg);
   setSprite(scene.sprite);
   setDialogue(scene.text);
+  updateHud();
 
+  // choices handling
   const choiceBox = document.getElementById("choices");
-  choiceBox.innerHTML="";
-  if(scene.choice){
-    choiceBox.style.display="block";
-    scene.choice.forEach(opt =>{
-      const btn=document.createElement("button");
-      btn.textContent=opt.text;
-      btn.onclick=()=>{
-        if(opt.affection) state.affection += opt.affection;
-        state.sceneIndex=opt.next;
+  choiceBox.innerHTML = "";
+  if(scene.choice && Array.isArray(scene.choice)){
+    choiceBox.style.display = "flex";
+    // create buttons
+    scene.choice.forEach(opt => {
+      const btn = document.createElement("button");
+      btn.textContent = opt.text;
+      btn.onclick = () => {
+        // apply affection (may be negative/positive)
+        if(typeof opt.affection === "number") state.affection += opt.affection;
+        // clamp affection to reasonable bounds
+        if(state.affection > 99) state.affection = 99;
+        if(state.affection < -99) state.affection = -99;
+        // move to next
+        state.sceneIndex = opt.next;
         renderScene();
       };
       choiceBox.appendChild(btn);
     });
   } else {
-    choiceBox.style.display="none";
+    choiceBox.style.display = "none";
   }
 }
 
+/* ---------- ENDING LOGIC ---------- */
+
+function renderEnding(mode){
+  // mode can be 1000,1001,1002, or null (generic)
+  const affection = state.affection;
+  // choose based on affection value
+  // threshold:
+  // >=3 : Best / Romantic ending
+  // 0..2 : Neutral/Good
+  // <0 : Bad/Bittersweet
+  let endingType;
+  if (mode === 1001) {
+    // neutral explicit path reduces extremes
+    if (affection >= 2) endingType = "best";
+    else if (affection >= 0) endingType = "neutral";
+    else endingType = "bad";
+  } else if (mode === 1002) {
+    // weak path tends to neutral/bad
+    if (affection >= 3) endingType = "best";
+    else if (affection >= 1) endingType = "neutral";
+    else endingType = "bad";
+  } else if (mode === 1000) {
+    // strong confession, bias to best if affection positive
+    if (affection >= 0) endingType = "best";
+    else endingType = "neutral";
+  } else {
+    // fallback purely on affection
+    if (affection >= 3) endingType = "best";
+    else if (affection >= 0) endingType = "neutral";
+    else endingType = "bad";
+  }
+
+  // build ending scenes
+  if(endingType === "best"){
+    setBackground("courtyard");
+    setSprite("romantic");
+    setDialogue("Mika sorri com os olhos brilhando: 'Eu também gosto de você.' Vocês se aproximam sob as luzes do festival — um começo bonito para algo novo. ❤\n\n[Fim — Final Bom]");
+  } else if(endingType === "neutral"){
+    setBackground("street");
+    setSprite("shy");
+    setDialogue("Há carinho e incerteza. Mika segura sua mão por um momento e depois solta com um sorriso tímido. Vocês seguem amigos, talvez algo mais no futuro.\n\n[Fim — Final Neutro]");
+  } else {
+    setBackground("classroom");
+    setSprite("sad");
+    setDialogue("O silêncio pesa. Mika se afasta gentilmente: 'Acho melhor...' Ela vai embora. Você fica com a sensação do que poderia ter sido.\n\n[Fim — Final Ruim / Bittersweet]");
+  }
+
+  // show choices to restart or go to menu
+  const choiceBox = document.getElementById("choices");
+  choiceBox.innerHTML = "";
+  choiceBox.style.display = "flex";
+
+  const btnRestart = document.createElement("button");
+  btnRestart.textContent = "Reiniciar";
+  btnRestart.onclick = () => { restartGame(); };
+  choiceBox.appendChild(btnRestart);
+
+  const btnMenu = document.createElement("button");
+  btnMenu.textContent = "Voltar ao Menu";
+  btnMenu.onclick = () => { backToMenu(); };
+  choiceBox.appendChild(btnMenu);
+}
+
+/* ---------- NAVIGATION HELPERS ---------- */
+
 function nextScene(){
+  // advance only if current scene doesn't have a choice
   const scene = SCENES[state.sceneIndex];
-  if(scene.choice) return; // esperar escolha
-  state.sceneIndex
-function nextScene(){
-  const scene = SCENES[state.sceneIndex];
-  if(scene.choice) return; // se tem escolha, esperar clique
+  if(scene && scene.choice) return; // wait for player to pick
+  // compute next index simply +1
   state.sceneIndex++;
   renderScene();
 }
 
 function startGame(){
-  document.getElementById("mainMenu").style.display="none";
-  document.getElementById("gameUI").style.display="block";
+  document.getElementById("mainMenu").style.display = "none";
+  document.getElementById("gameUI").style.display = "block";
   state.sceneIndex = 0;
   state.affection = 0;
   renderScene();
 }
 
-// Avançar com espaço
-document.addEventListener("keydown", (e)=>{
+function restartGame(){
+  state.sceneIndex = 0;
+  state.affection = 0;
+  renderScene();
+}
+
+function backToMenu(){
+  document.getElementById("mainMenu").style.display = "flex";
+  document.getElementById("gameUI").style.display = "none";
+  // small reset
+  state.sceneIndex = 0;
+  state.affection = 0;
+  document.getElementById("hud").style.display = "none";
+}
+
+/* ---------- Save / Load ---------- */
+function saveState(){
+  localStorage.setItem("vn_save", JSON.stringify(state));
+  alert("Jogo salvo!");
+}
+function loadState(){
+  const data = localStorage.getItem("vn_save");
+  if(!data){ alert("Nenhum save encontrado."); return; }
+  state = JSON.parse(data);
+  document.getElementById("mainMenu").style.display = "none";
+  document.getElementById("gameUI").style.display = "block";
+  renderScene();
+}
+
+/* ---------- Keyboard controls ---------- */
+document.addEventListener("keydown", (e) => {
+  // ignore if dialog choices are visible (we still allow restart with R maybe)
   if(e.code === "Space"){
     e.preventDefault();
     nextScene();
   }
+  if(e.key.toLowerCase() === "s" && e.ctrlKey){
+    // ctrl+s save quick
+    e.preventDefault();
+    saveState();
+  }
 });
+
+/* ---------- Extras: quick buttons in HUD (optional) ---------- */
+(function addQuickHUDButtons(){
+  // small area already in HTML for hud
+  // We'll add a save/load quick button to the HUD area for convenience.
+  const hud = document.getElementById("hud");
+  const container = document.createElement("div");
+  container.className = "box small";
+  container.style.display = "flex";
+  container.style.gap = "6px";
+
+  const saveBtn = document.createElement("button");
+  saveBtn.textContent = "Salvar";
+  saveBtn.style.padding = "6px 8px";
+  saveBtn.style.borderRadius = "6px";
+  saveBtn.onclick = saveState;
+  container.appendChild(saveBtn);
+
+  const loadBtn = document.createElement("button");
+  loadBtn.textContent = "Carregar";
+  loadBtn.style.padding = "6px 8px";
+  loadBtn.style.borderRadius = "6px";
+  loadBtn.onclick = loadState;
+  container.appendChild(loadBtn);
+
+  hud.appendChild(container);
+})();
+
 </script>
 </body>
 </html>
