@@ -1,199 +1,460 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<title>Além dos Cochichos</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Além dos Cochichos — Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
-  body, html {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
-    font-family: Arial, sans-serif;
-    background-color: black;
-    overflow: hidden;
+  :root{
+    --bg-dark:#0b0b0b;
+    --cream:#f1e0cc;
+    --brown:#a44f1a;
+    --brown-2:#8f4213;
+    --white:#ffffff;
+    --muted:#d6c7b3;
+    --panel-shadow: 0 14px 30px rgba(0,0,0,0.45);
+    font-family: "Montserrat", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
   }
 
-  /* MENU */
-  #menu, #game {
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-  }
-  #menu {
-    background: url("https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgbmefjKbkNBKcqJy7UdSK882TD8EE8O4e30uqSUaAIMQqKgXUzL6tOq4OwMrBdgyaCmUVv76tPUoDLQ_EbLYc8aM8NVRDp6u0RaBNTWOfd0Qm52APoExfVmhG9jyGW3JqcE_R_cJQuMI6Oo4xdybpjhG43h8rABRZyTxNwzDpzkIx7EGnBtlb8GiGzamz3/s320/7fd3a151-778d-40e6-a9ce-d59fb56b6595.png") no-repeat center center/cover;
-    color: white;
-  }
-  #menu img {
-    width: 420px;
-    margin-bottom: 40px;
-  }
-  .btn {
-    background: #a0622e;
-    border: none;
-    padding: 18px 50px;
-    margin: 12px;
-    font-size: 22px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background 0.3s;
-    color: white;
-    font-weight: bold;
-  }
-  .btn:hover { background: #d47b2f; }
+  html,body{height:100%;margin:0;background:linear-gradient(180deg,#07060a 0%, #0f0f13 100%); color:var(--white); -webkit-font-smoothing:antialiased;}
+  .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:18px;}
 
-  /* GAME */
-  #game {
-    display: none;
-    flex-direction: column;
-    background: black;
-    color: white;
-  }
-  #background {
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    z-index: -2;
-    object-fit: cover;
-  }
-  #character {
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    height: 90%;
-    z-index: -1;
+  /* Game stage */
+  .stage{
+    width:100%; max-width:1280px; height:720px; border-radius:14px; overflow:hidden; position:relative;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.7);
+    background:#000;
   }
 
-  /* DIALOGO */
-  #dialogueBox {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    background: none;
-    padding: 0;
-    font-size: 18px;
-    color: white;
-  }
-  #nameTag {
-    background: #b65621;
-    padding: 10px 20px;
-    display: inline-block;
-    font-weight: bold;
-    font-size: 18px;
-  }
-  #dialogueText {
-    background: #e07b39;
-    padding: 20px;
-    font-size: 20px;
+  /* Background image */
+  .bg{
+    position:absolute; inset:0; background-size:cover; background-position:center; filter: saturate(0.96) contrast(0.96) brightness(0.98);
   }
 
-  /* ESCOLHAS */
-  #choices {
-    position: absolute;
-    top: 40%;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
+  /* Menu layer */
+  .menu{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:space-between; gap:30px;
+    padding:60px; box-sizing:border-box; z-index:40;
   }
-  .choiceBtn {
-    background: #b65621;
-    border: none;
-    padding: 15px 40px;
-    font-size: 22px;
-    border-radius: 6px;
-    cursor: pointer;
-    color: white;
-    font-weight: bold;
-    transition: background 0.3s;
+  .menu-left{ width:44%; display:flex; flex-direction:column; gap:24px; color:var(--muted); }
+  .title{
+    font-size:44px; font-weight:800; color:var(--cream); text-transform:capitalize; letter-spacing:1px;
   }
-  .choiceBtn:hover { background: #e07b39; }
+  .subtitle{ font-size:16px; color:var(--muted); }
+  .play-btn{
+    display:inline-block; background:var(--brown); color:var(--white); padding:28px 48px; border-radius:6px; font-size:42px; font-weight:800;
+    text-decoration:none; border:12px solid var(--cream); width:260px; text-align:center; box-shadow:var(--panel-shadow); cursor:pointer;
+  }
+  .credits{ font-size:13px; color:var(--muted); margin-top:8px; }
+
+  /* Menu art */
+  .menu-art{ width:56%; display:flex; align-items:center; justify-content:center; pointer-events:none; }
+  .menu-art img{ max-width:100%; max-height:100%; object-fit:contain; filter: drop-shadow(0 10px 30px rgba(0,0,0,0.6)); }
+
+  /* Character layer */
+  .char-wrap{ position:absolute; bottom:82px; left:50%; transform:translateX(-50%); z-index:20; pointer-events:none; display:flex; align-items:flex-end; justify-content:center; width:100%; }
+  .char{ max-height:56%; transform:translateY(0); transition:transform .35s ease, opacity .25s ease; }
+  .char img{ width:auto; height:100%; display:block; user-select:none; }
+
+  /* Dialogue panel */
+  .dialogue{
+    position:absolute; left:40px; right:40px; bottom:18px; z-index:50; display:flex; gap:16px; align-items:flex-end;
+  }
+  .name-box{
+    background:var(--cream); color:var(--brown); font-weight:800; padding:18px 16px; border-radius:8px; min-width:210px;
+    border:6px solid var(--brown-2); box-shadow: 0 8px 28px rgba(0,0,0,0.45);
+  }
+  .text-box{
+    background:var(--brown); color:var(--cream); padding:22px 28px; border-radius:10px; flex:1; font-size:20px; line-height:1.4;
+    border:8px solid var(--cream); box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+  }
+
+  /* Choices - big stacked centered boxes */
+  .choices{
+    position:absolute; left:50%; top:36%; transform:translateX(-50%); z-index:60; display:flex; flex-direction:column; gap:22px;
+    width:520px; align-items:center; pointer-events:auto;
+  }
+  .choice-btn{
+    width:100%; text-align:center; padding:22px 18px; font-size:34px; font-weight:800; text-transform:uppercase;
+    background:var(--brown); color:var(--cream); border:14px solid var(--cream); border-radius:6px; cursor:pointer;
+    box-shadow: 0 18px 40px rgba(0,0,0,0.5), inset 0 -8px 18px rgba(0,0,0,0.12);
+    transition: transform .12s ease, box-shadow .12s ease;
+  }
+  .choice-btn:hover{ transform:translateY(-6px); box-shadow: 0 30px 60px rgba(0,0,0,0.6); }
+
+  /* Small UI */
+  .ui-top{
+    position:absolute; top:14px; left:14px; z-index:70; display:flex; gap:12px; align-items:center;
+  }
+  .ui-btn{ background:rgba(255,255,255,0.04); color:var(--muted); padding:8px 12px; border-radius:8px; border:1px solid rgba(255,255,255,0.03); cursor:pointer; font-weight:700; }
+
+  /* Affection display */
+  .aff{
+    position:absolute; top:14px; right:14px; z-index:70; background:rgba(0,0,0,0.35); padding:8px 12px; border-radius:10px; color:var(--muted);
+    border:1px solid rgba(255,255,255,0.03);
+  }
+
+  /* Hidden by default */
+  .hidden{ display:none; }
+
+  /* Responsive */
+  @media (max-width:900px){
+    .menu{ padding:32px; flex-direction:column-reverse; gap:12px; align-items:center; justify-content:center; }
+    .menu-left{ width:100%; text-align:center; align-items:center; }
+    .menu-art{ width:100%; padding-top:10px; }
+    .choices{ width:82%; top:30%; }
+    .name-box{ min-width:140px; padding:12px 10px; font-size:14px; }
+    .text-box{ font-size:16px; padding:16px; border-width:6px; }
+    .play-btn{ font-size:32px; padding:18px 30px; width:220px; }
+  }
+
+  @media (max-height:700px){
+    .char-wrap{ bottom:64px; }
+    .dialogue{ bottom:10px; left:14px; right:14px; }
+  }
 </style>
 </head>
 <body>
+<div class="wrap">
+  <div class="stage" id="stage">
 
-<!-- MENU -->
-<div id="menu">
-  <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgI2IFFxEOWJ9a2Qxm2b8AVPIXSrfpoNQ7jrUFciTuWd1bOVGt04d9eGL_bvg-Cm36pxQGXQWT0FVYF6Zy9ER3Sa1SoeFtaN5LjatxqOvS8QTeMgmWkkwkFtYtKaebKV5jSPJ6d4pWcE9rabmDlo9j8sdH96qc0_4_CFwgOAP1rjHljWdBgOAEqYgtY9_HM/s320/1f0391d1-b190-48e3-9823-482c6624bf97.png" alt="Logo do Jogo">
-  <button class="btn" onclick="startGame()">PLAY</button>
-  <button class="btn" onclick="showCredits()">CRÉDITOS</button>
-  <button class="btn" onclick="exitGame()">SAIR</button>
-</div>
+    <!-- Background -->
+    <div class="bg" id="bg"></div>
 
-<!-- GAME -->
-<div id="game">
-  <img id="background" src="">
-  <img id="character" src="">
-  <div id="dialogueBox">
-    <div id="nameTag">CHIAKI</div>
-    <div id="dialogueText"></div>
+    <!-- Menu (first visible) -->
+    <div class="menu" id="menuLayer">
+      <div class="menu-left">
+        <div class="title">Além do Cochichos</div>
+        <div class="subtitle">Visual Novel — demo</div>
+        <a class="play-btn" id="playBtn">PLAY</a>
+        <div class="credits">Criado por: <strong>Yan Comerlatto Massoni</strong></div>
+      </div>
+      <div class="menu-art">
+        <!-- Menu art (you can swap URL to your hi-res art) -->
+        <img id="menuArt" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgbmefjKbkNBKcqJy7UdSK882TD8EE8O4e30uqSUaAIMQqKgXUzL6tOq4OwMrBdgyaCmUVv76tPUoDLQ_EbLYc8aM8NVRDp6u0RaBNTWOfd0Qm52APoExfVmhG9jyGW3JqcE_R_cJQuMI6Oo4xdybpjhG43h8rABRZyTxNwzDpzkIx7EGnBtlb8GiGzamz3/s320/7fd3a151-778d-40e6-a9ce-d59fb56b6595.png" alt="menu art" />
+      </div>
+    </div>
+
+    <!-- Top UI -->
+    <div class="ui-top" id="uiTop" style="z-index:80;">
+      <button class="ui-btn" id="btnSave">Salvar</button>
+      <button class="ui-btn" id="btnLoad">Carregar</button>
+      <button class="ui-btn" id="btnRestart">Reiniciar</button>
+    </div>
+
+    <div class="aff" id="affBox">Afeto: <strong id="affVal">0</strong></div>
+
+    <!-- Character -->
+    <div class="char-wrap" id="charWrap" aria-hidden="true">
+      <div class="char" id="char"><img id="charImg" src="" alt="personagem" /></div>
+    </div>
+
+    <!-- Choices (stacked central, initially hidden) -->
+    <div class="choices hidden" id="choicesLayer"></div>
+
+    <!-- Dialogue (name + text) -->
+    <div class="dialogue hidden" id="dialogueLayer">
+      <div class="name-box" id="nameBox">Você</div>
+      <div class="text-box" id="textBox">Clique em <strong>PLAY</strong> para começar.</div>
+    </div>
+
   </div>
-  <div id="choices"></div>
 </div>
 
 <script>
-const menu = document.getElementById("menu");
-const game = document.getElementById("game");
-const bg = document.getElementById("background");
-const char = document.getElementById("character");
-const dialogueText = document.getElementById("dialogueText");
-const choicesDiv = document.getElementById("choices");
+/* ---------- Assets (use your provided URLs) ---------- */
+const SPRITES = {
+  neutral: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhdG6e5sjfiLbvSbtVGxFIX_LmGxXh7wRWzg_ZgqxeDvxsAXAldYsgWPhyphenhyphentlbmJX4ZQnGl7ypGO6sed3JdnGqt3KC_pGsOXgD3TKnTsif8dK_gMBcwJ-8sD4IxKyzQamy7dIQSZhez4dSYQ4NH7X9SBjvIWVhREIkfctaoJQGg-qHMGQvtgJ9bsYpfpmz0U/s320/63ad9301-3cdc-4956-9826-aabba17021fc.png",
+  uncomfortable: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj57HEfWxF7k2EwEY2qiX4w7kzhf_WXbhygRHNgOFmCDsn67USVncB37DrIKASpUpLVv055XzrPjQcR-Evv2AdXX7cpleZypH1JoEsnmG3MyBnI5i7Ae2EhQxIO0GMir2PQvsZo-hUEGkGU3Z_lacDG0a7nkNBWNBjBATObetW78RyvVvomEXFQoxJfnF6i/s320/38dbc72f-adc5-4736-a151-3f9de6e6a7d1-removebg-preview.png",
+  embarrassed: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhsyGAEZ9nzbS8RpxfWa5TMZz5QWoR7wFj_j5qHGNGnu6qDQRjpyjwA-VE-pXfjG-ShHfqyUIzRiYsF74dfEw0tAgOVL6pspbfwe6LJczWMEJI87kW-PuI3qqsEYX8o0RgDageRemNCGCMX6iwt8jI-LbJEUcUf53nvIR71oFpZeWU41dXjC7TYkszEO_am/s320/image-removebg-preview%20(20).png",
+  happy: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh9la3On91cbXMdMpHtbNBY8KA2EujruvL9NhjzrQ0C-97z5-QzPU5rNdvUSswIIYDrzkLmlr-VJWydfC8sDp5PjBamztTsqMJZGwmnR2EzdOD_8VNKqBepo32j8B0gTZwRiMo-iH8U7BD4vOjK-pNxiY_BRBxvAa1hnUq-0QSKwUQVClJ2Ff3BPj3iTWo6/s320/image-removebg-preview%20(21).png",
+  sad: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjP6B6yiU2kgRbV-RFjrGi02YfUOAW28T4658XGJg2UDKpmeUEQtHzT62WB5XKAubxcSCnBHXWt9tlvJhotsgL1bq6rmNjPBL2LdbaDmgtkFvkyhVZrsgGGTHT6SklZJFwvZQNTHc-oX4PDFuvRbxGC-_GNlntAoMgJYEoIeNJfbc3vMK8v6zfU3Zh-bXBq/s320/image-removebg-preview%20(22).png",
+  angry: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg3sQ77kGYV_0_uNMV82EiRzpNjr60lctM41yl8QWFixf9affV9kW1-HCFeR48ku8X9oDFlgWiGEgPDd9syFLMZgmBC9OmKsDFCFLqlIfZ4Aj42SaTWr_Qqxf70svG-A0e_L0jgGtOzFHqOllxzY5p4gL8yAZ17DyqoHnPinRmCzpoi-MunbRscLZGO3iRR/s320/image-removebg-preview%20(23).png",
+  surprised: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEilnbH9h6X0cwNyy2X5_63Ml6DVktg3IdS3go4Zk8krhNhhLlsjEMVGY-PRKFjcPWiQ4LgmIQhhnz9HqzVA9LKdJUUJuR2GQBxw0hPPXXwBgAnzmEdWZz5EEP-meZBFdYI_dfcNjH0KEVaDzyxPgswnAd8ym3srLwCtE7js9lBUo-batFsJWzsYDDKNa57n/s320/3fdf9aee-6f8e-4324-a71a-6a23b6b6dd4e.png",
+  love: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgOSmp99WsQKTTi6f7L0soPMDlqptx4PNyIkzgqvrP3Zn5qrkpw5Tv8VWGKnRwq7cVFfI61_uGiyBX0qR-b7ayAmAOgMQrUOjsutXavbOzkgHjou1S4gr4holfvasFcwdNyc7PYEdQDbnyt3bm4j7MM9glTl7jN6kzIMESHWYa4dQumAkswcoRBIdWY7NH2/s320/459765c8-bc95-4be8-a9da-7fd2cb19b402.png"
+};
 
-let currentIndex = 0;
+const BACKS = {
+  classroom: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjJIdENAJVgqTQDsjT21lO4Rm2sc1IV3Qt-ViY76pamcH_OhUouZ0yvKbHAZ6pHt2O_vgyk6ftATy2sLXrE55MfNfTwlazc2DbkCT-0bT9uaXQSvyBuaPTRWFxTzDuSo_DIg2CH8W4o34H-_0doZdZS7o_80cbC8vPVHHv7JyBC0sz6PT5mR2EBVDx9xrkR/s320/1f28dff2-9eda-40dc-aa50-272e6f3d114d.png",
+  corridor: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiwiK8RXZ2nlILZd6UGmDVOmDyQwB75RPkCajEf25wIYcc2lzVkelRyEGR-uqlpdUaUYfx6MXRNcsP61P6gwPwWTR0JgsiLjmanAu6fjIM_Ran9-uBVq-HOk8tO1sjAjdFAHRvVIknXgVHMQasCs56WHtIXvPs7UbONOR5ZiyqteuQ7pBhtAlm2p9xU-IMK/s320/302624f7-28c7-4504-997b-605a17d08aee.png",
+  library: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEidX2J7SNrB70DkBK722ZQJ_woMipa0yTd_8taF8Jze-qNvxHvlSy1dQCrvWTXs89mgSAdEtdDrdzqMdCgSlJ9wnFGO6BbDG9dl2UIDmPtYvTUUFKVvXvVwjQiS82a_MYqBk8qIMQL83yGSlfN3Qhtrb_keC2R3PaugNsZkf2Qs6ugyXHOQPAGz-5Yw1U3u/s320/dc5dbbf1-9147-481d-b212-8a725307a261.png",
+  courtyard: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgtkCqfrwELTVFVub9ZsINhIoQyyoD6qCxhZu_D4_Yeml7jlN6GZbQdJr1AI6rWnyp9si3WKnlD3t7eb1GHc0ERvazctJWZu3nvWaC86dmPV9UI8srFINATAIOByoj5U3LQZpWw07k1M5Tvf0N-983645wpJvDwyk_-oAv0XDLtd9YCfiKM0u5f1xte-1qf/s320/25c9779d-f2b4-4bd2-9955-4fc3c1f36b49.png",
+  street: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjU03KO_GkbUfBWgVQiDfd7A0r3mcSVdQGuQOa1elc0IZ59bu9Cdr4NAeaVQ9fZM7ScgxW8MGIaeLHyT57OzN95EZF62pGh0lfeEFaMiV52XLhSwSi6Ut4bljWRV4X3ApFX46IV40iIGZl6TuVUdAiOYSaOexa3w101uCb48A2u9cn_ECCInrM1EJlHIvQw/s320/f08408c7-9ab7-49f4-bea8-96c35ff47669.png",
+  nightcg: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgbmefjKbkNBKcqJy7UdSK882TD8EE8O4e30uqSUaAIMQqKgXUzL6tOq4OwMrBdgyaCmUVv76tPUoDLQ_EbLYc8aM8NVRDp6u0RaBNTWOfd0Qm52APoExfVmhG9jyGW3JqcE_R_cJQuMI6Oo4xdybpjhG43h8rABRZyTxNwzDpzkIx7EGnBtlb8GiGzamz3/s320/7fd3a151-778d-40e6-a9ce-d59fb56b6595.png"
+};
 
-const story = [
-  {
-    bg: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjJIdENAJVgqTQDsjT21lO4Rm2sc1IV3Qt-ViY76pamcH_OhUouZ0yvKbHAZ6pHt2O_vgyk6ftATy2sLXrE55MfNfTwlazc2DbkCT-0bT9uaXQSvyBuaPTRWFxTzDuSo_DIg2CH8W4o34H-_0doZdZS7o_80cbC8vPVHHv7JyBC0sz6PT5mR2EBVDx9xrkR/s320/1f28dff2-9eda-40dc-aa50-272e6f3d114d.png",
-    char: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhdG6e5sjfiLbvSbtVGxFIX_LmGxXh7wRWzg_ZgqxeDvxsAXAldYsgWPhyphenhyphentlbmJX4ZQnGl7ypGO6sed3JdnGqt3KC_pGsOXgD3TKnTsif8dK_gMBcwJ-8sD4IxKyzQamy7dIQSZhez4dSYQ4NH7X9SBjvIWVhREIkfctaoJQGg-qHMGQvtgJ9bsYpfpmz0U/s320/63ad9301-3cdc-4956-9826-aabba17021fc.png",
-    text: "Primeiro dia na escola. Uma nova aluna entra na sala, em silêncio."
+/* ---------- Simple state ---------- */
+let state = {
+  current: "menu",    // 'menu' or scene id
+  affection: 0,
+  history: []
+};
+
+/* ---------- Scenes script (expandable) ---------- */
+const SCENES = {
+  intro: {
+    bg: "classroom",
+    sprite: "neutral",
+    name: "",
+    text: "Um dia comum na escola. O professor entra e diz: 'Turma, hoje temos uma nova aluna.'",
+    choices: [{ label: "Continuar", goto: "entrance" }]
+  },
+  entrance: {
+    bg: "classroom",
+    sprite: "neutral",
+    name: "",
+    text: "Ela entra devagar, evita contato visual e se senta no fundo da sala. Todos cochicham, mas ninguém fala com ela.",
+    choices: [
+      { label: "Ignorar e continuar a aula", goto: "ignore" },
+      { label: "Tentar puxar papo no intervalo", goto: "first_contact" }
+    ]
+  },
+  ignore: {
+    bg: "classroom",
+    sprite: "neutral",
+    name: "Você",
+    text: "Você ignora e segue. A sensação de ter perdido algo fica no ar.",
+    choices: [{ label: "Seguir", goto: "meet_chance" }]
+  },
+  first_contact: {
+    bg: "courtyard",
+    sprite: "uncomfortable",
+    name: "Ela",
+    text: "(Intervalo) Ela responde curto, desconfortável mas não hostil. Aos poucos revela que se transferiu e que confia com dificuldade.",
+    choices: [
+      { label: "Insistir em conversar", effect: { affection: 1 }, goto: "approach" },
+      { label: "Dar espaço, mostrar interesse depois", effect: { affection: 0 }, goto: "approach" }
+    ]
+  },
+  meet_chance: {
+    bg: "library",
+    sprite: "happy",
+    name: "",
+    text: "Em outro dia, você a vê na biblioteca. Ela ri discretamente de uma piada sua.",
+    choices: [{ label: "Sorrir de volta", effect: { affection: 1 }, goto: "approach" }, { label: "Apenas observar", effect: { affection: 0 }, goto: "approach" }]
+  },
+  approach: {
+    bg: "library",
+    sprite: "happy",
+    name: "Ela",
+    text: "Ela mostra sinais de conforto: riso contido, rubor com elogios. Porém teme julgamentos. Um colega a provoca mais tarde.",
+    choices: [
+      { label: "Defender ela do colega", effect: { affection: 2 }, goto: "after_bully" },
+      { label: "Ficar quieto", effect: { affection: -1 }, goto: "after_bully" }
+    ]
+  },
+  after_bully: {
+    bg: "classroom",
+    sprite: "surprised",
+    name: "",
+    text: "O evento muda a dinâmica. É hora de ver onde isso leva.",
+    choices: [{ label: "Continuar", goto: "outcome" }]
+  },
+  outcome: {
+    bg: "street",
+    sprite: "neutral",
+    name: "",
+    text: "Fim de tarde. A reação de vocês determinou o rumo da relação.",
+    choices: [{ label: "Ver desfecho", goto: "select_ending" }]
+  },
+  ending_romance: {
+    bg: "nightcg",
+    sprite: "love",
+    name: "Ela",
+    text: "Ela começa a te esperar depois da aula e confessa: 'Nunca tive um amigo tão próximo...' O clima fica íntimo.",
+    choices: [
+      { label: "Confessar sentimentos", goto: "romance_yes" },
+      { label: "Ainda não confessar", goto: "romance_no" }
+    ]
+  },
+  romance_yes: {
+    bg: "nightcg",
+    sprite: "love",
+    name: "",
+    text: "Vocês trocam confissões e começam um relacionamento terno. Fim.",
+    choices: [{ label: "Voltar ao menu", goto: "menu" }]
+  },
+  romance_no: {
+    bg: "street",
+    sprite: "happy",
+    name: "",
+    text: "Vocês permanecem amigos, com algo não-dito no ar. Final em aberto.",
+    choices: [{ label: "Voltar ao menu", goto: "menu" }]
+  },
+  ending_friends: {
+    bg: "street",
+    sprite: "happy",
+    name: "",
+    text: "Vocês viram bons amigos — carinho e confiança, sem romance.",
+    choices: [{ label: "Voltar ao menu", goto: "menu" }]
+  },
+  ending_distant: {
+    bg: "street",
+    sprite: "sad",
+    name: "",
+    text: "O afeto ficou baixo. Ela se fecha e a relação termina em distanciamento.",
+    choices: [{ label: "Voltar ao menu", goto: "menu" }]
   }
-];
+};
 
-function startGame() {
-  menu.style.display = "none";
-  game.style.display = "flex";
-  showScene(0);
+/* ---------- DOM refs ---------- */
+const bgEl = document.getElementById("bg");
+const menuLayer = document.getElementById("menuLayer");
+const playBtn = document.getElementById("playBtn");
+const menuArt = document.getElementById("menuArt");
+const charImg = document.getElementById("charImg");
+const charWrap = document.getElementById("charWrap");
+const dialogueLayer = document.getElementById("dialogueLayer");
+const nameBox = document.getElementById("nameBox");
+const textBox = document.getElementById("textBox");
+const choicesLayer = document.getElementById("choicesLayer");
+const choicesHiddenClass = "hidden";
+const affVal = document.getElementById("affVal");
+
+/* ---------- Helpers ---------- */
+function setBackground(key){
+  const url = (key && BACKS[key]) ? BACKS[key] : BACKS.classroom;
+  bgEl.style.backgroundImage = `url('${url}')`;
+}
+function setCharacter(key){
+  if(!key){ charImg.src = ""; charWrap.style.opacity = 0; return; }
+  const url = SPRITES[key] || SPRITES.neutral;
+  charImg.src = url;
+  charWrap.style.opacity = 1;
+}
+function showMenu(show){
+  menuLayer.style.display = show ? "flex" : "none";
+}
+function showDialogue(show){
+  if(show) dialogueLayer.classList.remove(choicesHiddenClass);
+  else dialogueLayer.classList.add(choicesHiddenClass);
+}
+function showChoices(show){
+  if(show) choicesLayer.classList.remove(choicesHiddenClass);
+  else choicesLayer.classList.add(choicesHiddenClass);
+}
+function updateAff(){
+  affVal.textContent = state.affection;
 }
 
-function showCredits() {
-  alert("Criado por Yan Comerlatto Massoni");
+/* Apply effect object */
+function applyEffect(effect){
+  if(!effect) return;
+  if(effect.affection) state.affection += effect.affection;
+  if(state.affection > 6) state.affection = 6;
+  if(state.affection < -6) state.affection = -6;
+  updateAff();
 }
 
-function exitGame() {
-  window.close();
+/* Clear choices and render new ones */
+function renderChoices(choices){
+  choicesLayer.innerHTML = "";
+  if(!choices || !choices.length){ showChoices(false); return; }
+  showChoices(true);
+  choices.forEach(ch => {
+    const btn = document.createElement("button");
+    btn.className = "choice-btn";
+    btn.innerText = ch.label;
+    btn.onclick = () => {
+      if(ch.effect) applyEffect(ch.effect);
+      goToScene(ch.goto);
+    };
+    choicesLayer.appendChild(btn);
+  });
 }
 
-function showScene(index) {
-  const scene = story[index];
-  currentIndex = index;
-  bg.src = scene.bg;
-  char.src = scene.char;
-  dialogueText.textContent = scene.text;
-
-  choicesDiv.innerHTML = "";
-  if (scene.choices) {
-    scene.choices.forEach(choice => {
-      const btn = document.createElement("button");
-      btn.textContent = choice.text;
-      btn.className = "choiceBtn";
-      btn.onclick = () => {
-        if (choice.next !== null) {
-          showScene(choice.next);
-        } else {
-          alert("Fim da história!");
-          location.reload();
-        }
-      };
-      choicesDiv.appendChild(btn);
-    });
+/* Render a scene by id */
+function goToScene(id){
+  if(id === "menu"){
+    state.current = "menu";
+    showMenu(true);
+    showDialogue(false);
+    showChoices(false);
+    setCharacter(null);
+    setBackground(BACKS.classroom ? "classroom" : null);
+    return;
   }
+
+  const scene = SCENES[id];
+  if(!scene){
+    console.error("Cena não encontrada:", id);
+    return;
+  }
+  state.current = id;
+  state.history.push(id);
+
+  // Special: ending selector
+  if(id === "select_ending"){
+    if(state.affection >= 4) return goToScene("ending_romance");
+    if(state.affection >= 2) return goToScene("ending_friends");
+    return goToScene("ending_distant");
+  }
+
+  // Set bg, character, name, text, choices
+  setBackground(scene.bg);
+  setCharacter(scene.sprite);
+  nameBox.textContent = scene.name || "";
+  if(!scene.name) nameBox.style.display = "none"; else nameBox.style.display = "block";
+  textBox.innerHTML = scene.text || "";
+  renderChoices(scene.choices || []);
+  showMenu(false);
+  showDialogue(true);
 }
+
+/* ---------- Save / Load / Restart ---------- */
+function saveGame(){
+  localStorage.setItem("vn_demo_save", JSON.stringify(state));
+  alert("Jogo salvo.");
+}
+function loadGame(){
+  const raw = localStorage.getItem("vn_demo_save");
+  if(!raw) { alert("Nenhum save encontrado."); return; }
+  state = JSON.parse(raw);
+  updateAff();
+  // resume last scene or menu
+  const last = state.history && state.history.length ? state.history[state.history.length -1] : "intro";
+  goToScene(last === "menu" ? "intro" : last);
+  alert("Save carregado.");
+}
+function restartGame(){
+  if(!confirm("Reiniciar demo?")) return;
+  state = { current:"menu", affection:0, history:[] };
+  updateAff();
+  showMenu(true);
+  showDialogue(false);
+  showChoices(false);
+  setCharacter(null);
+  setBackground("classroom");
+}
+
+/* ---------- UI hookups ---------- */
+playBtn.addEventListener("click", () => {
+  // hide menu and start at intro
+  goToScene("intro");
+});
+document.getElementById("btnSave").addEventListener("click", saveGame);
+document.getElementById("btnLoad").addEventListener("click", loadGame);
+document.getElementById("btnRestart").addEventListener("click", restartGame);
+
+/* ---------- Init ---------- */
+let state = { current:"menu", affection:0, history:[] };
+updateAff();
+showMenu(true);
+showDialogue(false);
+showChoices(false);
+setBackground("classroom");
+setCharacter(null);
+
+/* Optional: allow clicking text-box to auto-select sole choice */
+document.getElementById("textBox").addEventListener("click", () => {
+  const scene = SCENES[state.current];
+  if(scene && scene.choices && scene.choices.length === 1){
+    const only = scene.choices[0];
+    if(only.effect) applyEffect(only.effect);
+    goToScene(only.goto);
+  }
+});
 </script>
 </body>
 </html>
