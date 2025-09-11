@@ -13,6 +13,8 @@
     background-color: black;
     overflow: hidden;
   }
+
+  /* MENU */
   #menu, #game {
     position: absolute;
     top: 0; left: 0;
@@ -23,24 +25,28 @@
     flex-direction: column;
   }
   #menu {
-    background: url("7fd3a151-778d-40e6-a9ce-d59fb56b6595.png") no-repeat center center/cover;
+    background: url("https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgbmefjKbkNBKcqJy7UdSK882TD8EE8O4e30uqSUaAIMQqKgXUzL6tOq4OwMrBdgyaCmUVv76tPUoDLQ_EbLYc8aM8NVRDp6u0RaBNTWOfd0Qm52APoExfVmhG9jyGW3JqcE_R_cJQuMI6Oo4xdybpjhG43h8rABRZyTxNwzDpzkIx7EGnBtlb8GiGzamz3/s320/7fd3a151-778d-40e6-a9ce-d59fb56b6595.png") no-repeat center center/cover;
+    color: white;
   }
   #menu img {
-    width: 400px;
-    margin-bottom: 50px;
+    width: 420px;
+    margin-bottom: 40px;
   }
   .btn {
-    background: rgba(255,255,255,0.8);
+    background: #a0622e;
     border: none;
-    padding: 15px 30px;
-    margin: 10px;
-    font-size: 20px;
-    border-radius: 12px;
+    padding: 18px 50px;
+    margin: 12px;
+    font-size: 22px;
+    border-radius: 8px;
     cursor: pointer;
     transition: background 0.3s;
+    color: white;
+    font-weight: bold;
   }
-  .btn:hover { background: white; }
+  .btn:hover { background: #d47b2f; }
 
+  /* GAME */
   #game {
     display: none;
     flex-direction: column;
@@ -59,64 +65,77 @@
     bottom: 0;
     left: 50%;
     transform: translateX(-50%);
-    height: 80%;
+    height: 90%;
     z-index: -1;
   }
+
+  /* DIALOGO */
   #dialogueBox {
     position: absolute;
     bottom: 0;
     width: 100%;
-    background: rgba(0,0,0,0.7);
-    padding: 20px;
+    background: none;
+    padding: 0;
+    font-size: 18px;
+    color: white;
+  }
+  #nameTag {
+    background: #b65621;
+    padding: 10px 20px;
+    display: inline-block;
+    font-weight: bold;
     font-size: 18px;
   }
+  #dialogueText {
+    background: #e07b39;
+    padding: 20px;
+    font-size: 20px;
+  }
+
+  /* ESCOLHAS */
   #choices {
-    margin-top: 15px;
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
   }
   .choiceBtn {
-    background: rgba(255,255,255,0.9);
+    background: #b65621;
     border: none;
-    padding: 10px 20px;
-    margin: 5px;
-    border-radius: 8px;
+    padding: 15px 40px;
+    font-size: 22px;
+    border-radius: 6px;
     cursor: pointer;
-    transition: background 0.3s;
-    color: #5c3a1b;
+    color: white;
     font-weight: bold;
+    transition: background 0.3s;
   }
-  .choiceBtn:hover { background: white; }
+  .choiceBtn:hover { background: #e07b39; }
 </style>
 </head>
 <body>
 
-<!-- Menu -->
+<!-- MENU -->
 <div id="menu">
-  <img src="1f0391d1-b190-48e3-9823-482c6624bf97.png" alt="Logo do Jogo">
-  <button class="btn" onclick="startGame()">Iniciar</button>
-  <button class="btn" onclick="showCredits()">Créditos</button>
-  <button class="btn" onclick="exitGame()">Sair</button>
+  <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgI2IFFxEOWJ9a2Qxm2b8AVPIXSrfpoNQ7jrUFciTuWd1bOVGt04d9eGL_bvg-Cm36pxQGXQWT0FVYF6Zy9ER3Sa1SoeFtaN5LjatxqOvS8QTeMgmWkkwkFtYtKaebKV5jSPJ6d4pWcE9rabmDlo9j8sdH96qc0_4_CFwgOAP1rjHljWdBgOAEqYgtY9_HM/s320/1f0391d1-b190-48e3-9823-482c6624bf97.png" alt="Logo do Jogo">
+  <button class="btn" onclick="startGame()">PLAY</button>
+  <button class="btn" onclick="showCredits()">CRÉDITOS</button>
+  <button class="btn" onclick="exitGame()">SAIR</button>
 </div>
 
-<!-- Jogo -->
+<!-- GAME -->
 <div id="game">
   <img id="background" src="">
   <img id="character" src="">
   <div id="dialogueBox">
+    <div id="nameTag">CHIAKI</div>
     <div id="dialogueText"></div>
-    <div id="choices"></div>
   </div>
+  <div id="choices"></div>
 </div>
-
-<!-- Sons embutidos com Base64 -->
-<audio id="menuMusic" loop>
-  <source src="data:audio/mpeg;base64,//BASE64_DO_MENU_AQUI" type="audio/mpeg">
-</audio>
-<audio id="gameMusic" loop>
-  <source src="data:audio/mpeg;base64,//BASE64_DO_JOGO_AQUI" type="audio/mpeg">
-</audio>
-<audio id="clickSound">
-  <source src="data:audio/mpeg;base64,//BASE64_DO_CLICK_AQUI" type="audio/mpeg">
-</audio>
 
 <script>
 const menu = document.getElementById("menu");
@@ -126,151 +145,27 @@ const char = document.getElementById("character");
 const dialogueText = document.getElementById("dialogueText");
 const choicesDiv = document.getElementById("choices");
 
-const menuMusic = document.getElementById("menuMusic");
-const gameMusic = document.getElementById("gameMusic");
-const clickSound = document.getElementById("clickSound");
-
 let currentIndex = 0;
 
-// História alongada com mais escolhas
 const story = [
   {
-    bg: "1f28dff2-9eda-40dc-aa50-272e6f3d114d.png",
-    char: "63ad9301-3cdc-4956-9826-aabba17021fc.png",
-    text: "Primeiro dia na escola. Uma nova aluna entra na sala, em silêncio. Todos os olhares se voltam para ela. Você sente curiosidade e nervosismo.",
-    choices: [
-      { text: "Ignorar", next: 1 },
-      { text: "Puxar papo", next: 2 }
-    ]
-  },
-  {
-    bg: "1f28dff2-9eda-40dc-aa50-272e6f3d114d.png",
-    char: "38dbc72f-adc5-4736-a151-3f9de6e6a7d1-removebg-preview.png",
-    text: "Você decide ignorar. Ela se acomoda na carteira, evitando olhares. Sua mente começa a imaginar histórias sobre ela.",
-    choices: [{ text: "Continuar", next: 3 }]
-  },
-  {
-    bg: "1f28dff2-9eda-40dc-aa50-272e6f3d114d.png",
-    char: "image-removebg-preview (20).png",
-    text: "Você tenta puxar papo. Ela recua timidamente. Você sente que há algo por trás da fachada reservada dela.",
-    choices: [{ text: "Continuar", next: 3 }]
-  },
-  {
-    bg: "25c9779d-f2b4-4bd2-9955-4fc3c1f36b49.png",
-    char: "image-removebg-preview (21).png",
-    text: "No intervalo, ela desenha sozinha no pátio. Cada traço conta histórias silenciosas. O vento balança folhas ao redor.",
-    choices: [
-      { text: "Comentar sobre o desenho", next: 4 },
-      { text: "Respeitar e não falar nada", next: 5 }
-    ]
-  },
-  {
-    bg: "25c9779d-f2b4-4bd2-9955-4fc3c1f36b49.png",
-    char: "image-removebg-preview (21).png",
-    text: "Ela se fecha um pouco, mas guarda o gesto como lembrança. Um sorriso tímido surge.",
-    choices: [{ text: "Continuar", next: 6 }]
-  },
-  {
-    bg: "302624f7-28c7-4504-997b-605a17d08aee.png",
-    char: "image-removebg-preview (22).png",
-    text: "No corredor, ela parece carregada de pensamentos. O ambiente ecoa silenciosamente.",
-    choices: [
-      { text: "Perguntar se está bem", next: 6 },
-      { text: "Não se intrometer", next: 7 }
-    ]
-  },
-  {
-    bg: "dc5dbbf1-9147-481d-b212-8a725307a261.png",
-    char: "459765c8-bc95-4be8-a9da-7fd2cb19b402.png",
-    text: "Na biblioteca, ela ajuda você sem perceber. O muro entre vocês começa a cair.",
-    choices: [
-      { text: "Agradecer e puxar conversa", next: 8 },
-      { text: "Só observar", next: 9 }
-    ]
-  },
-  {
-    bg: "dc5dbbf1-9147-481d-b212-8a725307a261.png",
-    char: "459765c8-bc95-4be8-a9da-7fd2cb19b402.png",
-    text: "Você observa silenciosamente. Ela percebe e sorri levemente.",
-    choices: [{ text: "Continuar", next: 10 }]
-  },
-  {
-    bg: "f08408c7-9ab7-49f4-bea8-96c35ff47669.png",
-    char: "3fdf9aee-6f8e-4324-a71a-6a23b6b6dd4e.png",
-    text: "Chove forte. Vocês se abrigam juntos. O som da chuva cria uma sensação íntima.",
-    choices: [
-      { text: "Confortar", next: 11 },
-      { text: "Ficar em silêncio", next: 12 }
-    ]
-  },
-  {
-    bg: "f08408c7-9ab7-49f4-bea8-96c35ff47669.png",
-    char: "459765c8-bc95-4be8-a9da-7fd2cb19b402.png",
-    text: "Ela sorri timidamente. A confiança cresce e a chuva agora é pano de fundo para algo mais.",
-    choices: [{ text: "Fim: Romance em Formação", next: null }]
-  },
-  {
-    bg: "f08408c7-9ab7-49f4-bea8-96c35ff47669.png",
-    char: "38dbc72f-adc5-4736-a151-3f9de6e6a7d1-removebg-preview.png",
-    text: "Vocês permanecem em silêncio. O respeito e compreensão mútua ficam claros. Futuro incerto, mas promissor.",
-    choices: [{ text: "Fim: Conexão silenciosa", next: null }]
-  },
-  {
-    bg: "25c9779d-f2b4-4bd2-9955-4fc3c1f36b49.png",
-    char: "image-removebg-preview (21).png",
-    text: "Durante o intervalo seguinte, você observa que ela parece triste. Uma escolha surge em sua mente.",
-    choices: [
-      { text: "Oferecer ajuda", next: 13 },
-      { text: "Ignorar por enquanto", next: 14 }
-    ]
-  },
-  {
-    bg: "25c9779d-f2b4-4bd2-9955-4fc3c1f36b49.png",
-    char: "image-removebg-preview (21).png",
-    text: "Você decide ignorar por enquanto. Ela se afasta para um canto, mas você nota a solidão em seus olhos.",
-    choices: [{ text: "Continuar", next: 15 }]
-  },
-  {
-    bg: "302624f7-28c7-4504-997b-605a17d08aee.png",
-    char: "38dbc72f-adc5-4736-a151-3f9de6e6a7d1-removebg-preview.png",
-    text: "Você oferece ajuda. Ela aceita com um sorriso tímido, e aos poucos começa a se abrir, compartilhando pequenas histórias de sua vida.",
-    choices: [{ text: "Continuar", next: 16 }]
-  },
-  {
-    bg: "dc5dbbf1-9147-481d-b212-8a725307a261.png",
-    char: "459765c8-bc95-4be8-a9da-7fd2cb19b402.png",
-    text: "Vocês compartilham interesses comuns em livros e desenhos. A amizade começa a se consolidar de forma natural e sincera.",
-    choices: [{ text: "Continuar", next: 17 }]
-  },
-  {
-    bg: "f08408c7-9ab7-49f4-bea8-96c35ff47669.png",
-    char: "459765c8-bc95-4be8-a9da-7fd2cb19b402.png",
-    text: "A chuva volta, mas dessa vez vocês riem juntos, compartilhando histórias e criando memórias. Pequenos gestos tornam-se importantes.",
-    choices: [{ text: "Fim: Amizade Verdadeira", next: null }]
+    bg: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjJIdENAJVgqTQDsjT21lO4Rm2sc1IV3Qt-ViY76pamcH_OhUouZ0yvKbHAZ6pHt2O_vgyk6ftATy2sLXrE55MfNfTwlazc2DbkCT-0bT9uaXQSvyBuaPTRWFxTzDuSo_DIg2CH8W4o34H-_0doZdZS7o_80cbC8vPVHHv7JyBC0sz6PT5mR2EBVDx9xrkR/s320/1f28dff2-9eda-40dc-aa50-272e6f3d114d.png",
+    char: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhdG6e5sjfiLbvSbtVGxFIX_LmGxXh7wRWzg_ZgqxeDvxsAXAldYsgWPhyphenhyphentlbmJX4ZQnGl7ypGO6sed3JdnGqt3KC_pGsOXgD3TKnTsif8dK_gMBcwJ-8sD4IxKyzQamy7dIQSZhez4dSYQ4NH7X9SBjvIWVhREIkfctaoJQGg-qHMGQvtgJ9bsYpfpmz0U/s320/63ad9301-3cdc-4956-9826-aabba17021fc.png",
+    text: "Primeiro dia na escola. Uma nova aluna entra na sala, em silêncio."
   }
 ];
 
-function playClick() {
-  clickSound.currentTime = 0;
-  clickSound.play();
-}
-
 function startGame() {
-  playClick();
   menu.style.display = "none";
   game.style.display = "flex";
-  menuMusic.pause();
-  gameMusic.play();
   showScene(0);
 }
 
 function showCredits() {
-  playClick();
-  alert("Jogo criado por Você :)");
+  alert("Criado por Yan Comerlatto Massoni");
 }
 
 function exitGame() {
-  playClick();
   window.close();
 }
 
@@ -282,26 +177,23 @@ function showScene(index) {
   dialogueText.textContent = scene.text;
 
   choicesDiv.innerHTML = "";
-  scene.choices.forEach(choice => {
-    const btn = document.createElement("button");
-    btn.textContent = choice.text;
-    btn.className = "choiceBtn";
-    btn.onclick = () => {
-      playClick();
-      if (choice.next !== null) {
-        showScene(choice.next);
-      } else {
-        alert("Fim da história!");
-        location.reload();
-      }
-    };
-    choicesDiv.appendChild(btn);
-  });
+  if (scene.choices) {
+    scene.choices.forEach(choice => {
+      const btn = document.createElement("button");
+      btn.textContent = choice.text;
+      btn.className = "choiceBtn";
+      btn.onclick = () => {
+        if (choice.next !== null) {
+          showScene(choice.next);
+        } else {
+          alert("Fim da história!");
+          location.reload();
+        }
+      };
+      choicesDiv.appendChild(btn);
+    });
+  }
 }
-
-window.onload = () => {
-  menuMusic.play();
-};
 </script>
 </body>
 </html>
