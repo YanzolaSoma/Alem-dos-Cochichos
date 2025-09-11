@@ -1,303 +1,304 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>Além dos Cochichos</title>
-  <style>
-    body, html {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      height: 100%;
-      font-family: Arial, sans-serif;
-      background: black;
-      overflow: hidden;
-    }
-    #menu, #game, #credits {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      display: none;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-    }
-    #menu {
-      background: url("imagens/menu.png") no-repeat center center/cover;
-      display: flex;
-    }
-    #menu img {
-      width: 400px;
-      margin-bottom: 20px;
-    }
-    #menu button, #credits button {
-      margin: 10px;
-      padding: 15px 30px;
-      font-size: 20px;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      background: rgba(255, 255, 255, 0.8);
-    }
-    #game {
-      background-size: cover;
-      background-position: center;
-      display: flex;
-      justify-content: flex-end;
-      align-items: flex-end;
-      flex-direction: column;
-    }
-    #character {
-      position: absolute;
-      bottom: 100px;
-      left: 50px;
-      height: 70%;
-    }
-    #dialogueBox {
-      background: rgba(0,0,0,0.7);
-      color: white;
-      padding: 20px;
-      width: 90%;
-      max-width: 900px;
-      margin: 20px auto;
-      border-radius: 15px;
-      font-size: 18px;
-    }
-    #choices {
-      margin-top: 15px;
-    }
-    #choices button {
-      margin: 5px;
-      padding: 10px 20px;
-      font-size: 16px;
-      cursor: pointer;
-      border-radius: 8px;
-      border: none;
-    }
-    #credits {
-      background: black;
-      color: white;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>Além dos Cochichos</title>
+<style>
+  body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    font-family: Arial, sans-serif;
+    background-color: black;
+    overflow: hidden;
+  }
+  #menu, #game {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+  #menu {
+    background: url("7fd3a151-778d-40e6-a9ce-d59fb56b6595.png") no-repeat center center/cover;
+  }
+  #menu img {
+    width: 400px;
+    margin-bottom: 50px;
+  }
+  .btn {
+    background: rgba(255,255,255,0.8);
+    border: none;
+    padding: 15px 30px;
+    margin: 10px;
+    font-size: 20px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  .btn:hover { background: white; }
+
+  #game {
+    display: none;
+    flex-direction: column;
+    background: black;
+    color: white;
+  }
+  #background {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: -2;
+    object-fit: cover;
+  }
+  #character {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    height: 80%;
+    z-index: -1;
+  }
+  #dialogueBox {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background: rgba(0,0,0,0.7);
+    padding: 20px;
+    font-size: 18px;
+  }
+  #choices {
+    margin-top: 15px;
+  }
+  .choiceBtn {
+    background: rgba(255,255,255,0.9);
+    border: none;
+    padding: 10px 20px;
+    margin: 5px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s;
+    color: #5c3a1b;
+    font-weight: bold;
+  }
+  .choiceBtn:hover { background: white; }
+</style>
 </head>
 <body>
 
+<!-- Menu -->
 <div id="menu">
-  <img src="imagens/logo.png" alt="Logo do Jogo">
-  <button onclick="startGame()">Iniciar</button>
-  <button onclick="showCredits()">Créditos</button>
-  <button onclick="closeGame()">Sair</button>
+  <img src="1f0391d1-b190-48e3-9823-482c6624bf97.png" alt="Logo do Jogo">
+  <button class="btn" onclick="startGame()">Iniciar</button>
+  <button class="btn" onclick="showCredits()">Créditos</button>
+  <button class="btn" onclick="exitGame()">Sair</button>
 </div>
 
-<div id="credits">
-  <h1>Créditos</h1>
-  <p>História, Arte e Desenvolvimento: Você :)</p>
-  <button onclick="backToMenu()">Voltar</button>
-</div>
-
+<!-- Jogo -->
 <div id="game">
+  <img id="background" src="">
   <img id="character" src="">
   <div id="dialogueBox">
-    <p id="dialogueText"></p>
+    <div id="dialogueText"></div>
     <div id="choices"></div>
   </div>
 </div>
 
-<!-- Sons -->
+<!-- Sons embutidos com Base64 -->
 <audio id="menuMusic" loop>
-  <source src="sons/musica_menu.mp3" type="audio/mpeg">
+  <source src="data:audio/mpeg;base64,//BASE64_DO_MENU_AQUI" type="audio/mpeg">
 </audio>
 <audio id="gameMusic" loop>
-  <source src="sons/musica_jogo.mp3" type="audio/mpeg">
+  <source src="data:audio/mpeg;base64,//BASE64_DO_JOGO_AQUI" type="audio/mpeg">
 </audio>
 <audio id="clickSound">
-  <source src="sons/click.mp3" type="audio/mpeg">
+  <source src="data:audio/mpeg;base64,//BASE64_DO_CLICK_AQUI" type="audio/mpeg">
 </audio>
 
 <script>
+const menu = document.getElementById("menu");
+const game = document.getElementById("game");
+const bg = document.getElementById("background");
+const char = document.getElementById("character");
+const dialogueText = document.getElementById("dialogueText");
+const choicesDiv = document.getElementById("choices");
+
 const menuMusic = document.getElementById("menuMusic");
 const gameMusic = document.getElementById("gameMusic");
 const clickSound = document.getElementById("clickSound");
 
-let currentScene = 0;
-let affection = 0;
+let currentIndex = 0;
 
-const scenes = [
+// História alongada com mais escolhas
+const story = [
   {
-    bg: "imagens/sala.png",
-    char: "imagens/personagem_neutra.png",
-    text: "O professor apresenta a nova aluna. A sala cai em silêncio, cochichos surgem ao fundo.",
+    bg: "1f28dff2-9eda-40dc-aa50-272e6f3d114d.png",
+    char: "63ad9301-3cdc-4956-9826-aabba17021fc.png",
+    text: "Primeiro dia na escola. Uma nova aluna entra na sala, em silêncio. Todos os olhares se voltam para ela. Você sente curiosidade e nervosismo.",
     choices: [
-      { text: "Ignorar.", next: 1 },
-      { text: "Puxar papo.", next: 2, affection: 1 }
+      { text: "Ignorar", next: 1 },
+      { text: "Puxar papo", next: 2 }
     ]
   },
   {
-    bg: "imagens/sala.png",
-    char: "imagens/personagem_triste.png",
-    text: "Você decide não falar nada. Ela permanece quieta, olhando para baixo.",
-    choices: [{ text: "Seguir a aula.", next: 3 }]
+    bg: "1f28dff2-9eda-40dc-aa50-272e6f3d114d.png",
+    char: "38dbc72f-adc5-4736-a151-3f9de6e6a7d1-removebg-preview.png",
+    text: "Você decide ignorar. Ela se acomoda na carteira, evitando olhares. Sua mente começa a imaginar histórias sobre ela.",
+    choices: [{ text: "Continuar", next: 3 }]
   },
   {
-    bg: "imagens/sala.png",
-    char: "imagens/personagem_desconfortavel.png",
-    text: "Você tenta puxar papo, mas ela responde timidamente, quase recusando.",
-    choices: [{ text: "Continuar a aula.", next: 3 }]
+    bg: "1f28dff2-9eda-40dc-aa50-272e6f3d114d.png",
+    char: "image-removebg-preview (20).png",
+    text: "Você tenta puxar papo. Ela recua timidamente. Você sente que há algo por trás da fachada reservada dela.",
+    choices: [{ text: "Continuar", next: 3 }]
   },
   {
-    bg: "imagens/patio.png",
-    char: "imagens/personagem_neutra.png",
-    text: "No intervalo, você a vê sozinha, desenhando em um caderno.",
+    bg: "25c9779d-f2b4-4bd2-9955-4fc3c1f36b49.png",
+    char: "image-removebg-preview (21).png",
+    text: "No intervalo, ela desenha sozinha no pátio. Cada traço conta histórias silenciosas. O vento balança folhas ao redor.",
     choices: [
-      { text: "Comentar sobre o desenho.", next: 4, affection: 1 },
-      { text: "Respeitar o espaço dela.", next: 5 }
+      { text: "Comentar sobre o desenho", next: 4 },
+      { text: "Respeitar e não falar nada", next: 5 }
     ]
   },
   {
-    bg: "imagens/patio.png",
-    char: "imagens/personagem_envergonhada.png",
-    text: "Ela fecha o caderno rapidamente, corando. Mas parece guardar a lembrança.",
-    choices: [{ text: "Sorrir e sair.", next: 6 }]
+    bg: "25c9779d-f2b4-4bd2-9955-4fc3c1f36b49.png",
+    char: "image-removebg-preview (21).png",
+    text: "Ela se fecha um pouco, mas guarda o gesto como lembrança. Um sorriso tímido surge.",
+    choices: [{ text: "Continuar", next: 6 }]
   },
   {
-    bg: "imagens/patio.png",
-    char: "imagens/personagem_triste.png",
-    text: "Você respeita e passa reto. Ela permanece isolada.",
-    choices: [{ text: "Ir embora.", next: 6 }]
-  },
-  {
-    bg: "imagens/biblioteca.png",
-    char: "imagens/personagem_feliz.png",
-    text: "Na biblioteca, ela aponta um livro que você procurava. Uma ajuda inesperada.",
+    bg: "302624f7-28c7-4504-997b-605a17d08aee.png",
+    char: "image-removebg-preview (22).png",
+    text: "No corredor, ela parece carregada de pensamentos. O ambiente ecoa silenciosamente.",
     choices: [
-      { text: "Agradecer gentilmente.", next: 7, affection: 1 },
-      { text: "Fingir naturalidade.", next: 7 }
+      { text: "Perguntar se está bem", next: 6 },
+      { text: "Não se intrometer", next: 7 }
     ]
   },
   {
-    bg: "imagens/corredor.png",
-    char: "imagens/personagem_triste.png",
-    text: "Um colega zoa ela no corredor. Você precisa decidir.",
+    bg: "dc5dbbf1-9147-481d-b212-8a725307a261.png",
+    char: "459765c8-bc95-4be8-a9da-7fd2cb19b402.png",
+    text: "Na biblioteca, ela ajuda você sem perceber. O muro entre vocês começa a cair.",
     choices: [
-      { text: "Defender ela.", next: 8, affection: 2 },
-      { text: "Ficar em silêncio.", next: 9 }
+      { text: "Agradecer e puxar conversa", next: 8 },
+      { text: "Só observar", next: 9 }
     ]
   },
   {
-    bg: "imagens/rua.png",
-    char: "imagens/personagem_romantica.png",
-    text: "Após a chuva, vocês se abrigam juntos. Ela solta: 'Às vezes é difícil acreditar que alguém realmente se importa.'",
-    choices: [{ text: "Olhar nos olhos dela.", next: 10, affection: 2 }]
+    bg: "dc5dbbf1-9147-481d-b212-8a725307a261.png",
+    char: "459765c8-bc95-4be8-a9da-7fd2cb19b402.png",
+    text: "Você observa silenciosamente. Ela percebe e sorri levemente.",
+    choices: [{ text: "Continuar", next: 10 }]
   },
   {
-    bg: "imagens/rua.png",
-    char: "imagens/personagem_triste.png",
-    text: "Ela se afasta e segue sozinha para casa.",
-    choices: [{ text: "Fim do dia.", next: 10 }]
-  },
-  {
-    bg: "imagens/sala.png",
-    char: "imagens/personagem_feliz.png",
-    text: "Chega o dia da festa da escola. Ela hesita em ir.",
+    bg: "f08408c7-9ab7-49f4-bea8-96c35ff47669.png",
+    char: "3fdf9aee-6f8e-4324-a71a-6a23b6b6dd4e.png",
+    text: "Chove forte. Vocês se abrigam juntos. O som da chuva cria uma sensação íntima.",
     choices: [
-      { text: "Convidá-la para ir com você.", next: 11, affection: 2 },
-      { text: "Deixar a decisão com ela.", next: 12 }
+      { text: "Confortar", next: 11 },
+      { text: "Ficar em silêncio", next: 12 }
     ]
   },
   {
-    bg: "imagens/patio.png",
-    char: "imagens/personagem_romantica.png",
-    text: "Vocês vão juntos. Pela primeira vez, ela sorri abertamente.",
-    choices: [{ text: "Final Romance", next: "romance" }]
+    bg: "f08408c7-9ab7-49f4-bea8-96c35ff47669.png",
+    char: "459765c8-bc95-4be8-a9da-7fd2cb19b402.png",
+    text: "Ela sorri timidamente. A confiança cresce e a chuva agora é pano de fundo para algo mais.",
+    choices: [{ text: "Fim: Romance em Formação", next: null }]
   },
   {
-    bg: "imagens/patio.png",
-    char: "imagens/personagem_feliz.png",
-    text: "Ela prefere não ir. Mas a amizade entre vocês está sólida.",
-    choices: [{ text: "Final Amizade", next: "amizade" }]
+    bg: "f08408c7-9ab7-49f4-bea8-96c35ff47669.png",
+    char: "38dbc72f-adc5-4736-a151-3f9de6e6a7d1-removebg-preview.png",
+    text: "Vocês permanecem em silêncio. O respeito e compreensão mútua ficam claros. Futuro incerto, mas promissor.",
+    choices: [{ text: "Fim: Conexão silenciosa", next: null }]
+  },
+  {
+    bg: "25c9779d-f2b4-4bd2-9955-4fc3c1f36b49.png",
+    char: "image-removebg-preview (21).png",
+    text: "Durante o intervalo seguinte, você observa que ela parece triste. Uma escolha surge em sua mente.",
+    choices: [
+      { text: "Oferecer ajuda", next: 13 },
+      { text: "Ignorar por enquanto", next: 14 }
+    ]
+  },
+  {
+    bg: "25c9779d-f2b4-4bd2-9955-4fc3c1f36b49.png",
+    char: "image-removebg-preview (21).png",
+    text: "Você decide ignorar por enquanto. Ela se afasta para um canto, mas você nota a solidão em seus olhos.",
+    choices: [{ text: "Continuar", next: 15 }]
+  },
+  {
+    bg: "302624f7-28c7-4504-997b-605a17d08aee.png",
+    char: "38dbc72f-adc5-4736-a151-3f9de6e6a7d1-removebg-preview.png",
+    text: "Você oferece ajuda. Ela aceita com um sorriso tímido, e aos poucos começa a se abrir, compartilhando pequenas histórias de sua vida.",
+    choices: [{ text: "Continuar", next: 16 }]
+  },
+  {
+    bg: "dc5dbbf1-9147-481d-b212-8a725307a261.png",
+    char: "459765c8-bc95-4be8-a9da-7fd2cb19b402.png",
+    text: "Vocês compartilham interesses comuns em livros e desenhos. A amizade começa a se consolidar de forma natural e sincera.",
+    choices: [{ text: "Continuar", next: 17 }]
+  },
+  {
+    bg: "f08408c7-9ab7-49f4-bea8-96c35ff47669.png",
+    char: "459765c8-bc95-4be8-a9da-7fd2cb19b402.png",
+    text: "A chuva volta, mas dessa vez vocês riem juntos, compartilhando histórias e criando memórias. Pequenos gestos tornam-se importantes.",
+    choices: [{ text: "Fim: Amizade Verdadeira", next: null }]
   }
 ];
 
-// finais
-const endings = {
-  romance: {
-    bg: "imagens/rua.png",
-    char: "imagens/personagem_romantica.png",
-    text: "Vocês caminham juntos sob a lua. Ela segura sua mão. Final Romance ❤️"
-  },
-  amizade: {
-    bg: "imagens/patio.png",
-    char: "imagens/personagem_feliz.png",
-    text: "Vocês continuam amigos, compartilhando pequenas alegrias. Final Amizade 🤝"
-  },
-  distanciamento: {
-    bg: "imagens/corredor.png",
-    char: "imagens/personagem_triste.png",
-    text: "Ela segue sua vida distante, e você percebe que perdeu a chance. Final Triste 💔"
-  }
-};
+function playClick() {
+  clickSound.currentTime = 0;
+  clickSound.play();
+}
 
 function startGame() {
-  document.getElementById("menu").style.display = "none";
-  document.getElementById("game").style.display = "flex";
+  playClick();
+  menu.style.display = "none";
+  game.style.display = "flex";
   menuMusic.pause();
-  menuMusic.currentTime = 0;
   gameMusic.play();
   showScene(0);
 }
 
 function showCredits() {
-  document.getElementById("menu").style.display = "none";
-  document.getElementById("credits").style.display = "flex";
+  playClick();
+  alert("Jogo criado por Você :)");
 }
 
-function backToMenu() {
-  document.getElementById("credits").style.display = "none";
-  document.getElementById("menu").style.display = "flex";
-}
-
-function closeGame() {
+function exitGame() {
+  playClick();
   window.close();
 }
 
 function showScene(index) {
-  if (typeof index === "string") {
-    let ending = endings[index];
-    document.getElementById("game").style.backgroundImage = `url(${ending.bg})`;
-    document.getElementById("character").src = ending.char;
-    document.getElementById("dialogueText").innerText = ending.text;
-    document.getElementById("choices").innerHTML = `<button onclick="backToMenu()">Voltar ao Menu</button>`;
-    return;
-  }
+  const scene = story[index];
+  currentIndex = index;
+  bg.src = scene.bg;
+  char.src = scene.char;
+  dialogueText.textContent = scene.text;
 
-  currentScene = index;
-  let scene = scenes[index];
-  document.getElementById("game").style.backgroundImage = `url(${scene.bg})`;
-  document.getElementById("character").src = scene.char;
-  document.getElementById("dialogueText").innerText = scene.text;
-  let choicesDiv = document.getElementById("choices");
   choicesDiv.innerHTML = "";
   scene.choices.forEach(choice => {
-    let btn = document.createElement("button");
-    btn.innerText = choice.text;
+    const btn = document.createElement("button");
+    btn.textContent = choice.text;
+    btn.className = "choiceBtn";
     btn.onclick = () => {
-      clickSound.play();
-      if (choice.affection) affection += choice.affection;
-      if (choice.next === 10 && affection < 3) {
-        showScene("distanciamento");
-      } else {
+      playClick();
+      if (choice.next !== null) {
         showScene(choice.next);
+      } else {
+        alert("Fim da história!");
+        location.reload();
       }
     };
     choicesDiv.appendChild(btn);
   });
 }
 
-// inicia tocando música do menu
 window.onload = () => {
   menuMusic.play();
 };
