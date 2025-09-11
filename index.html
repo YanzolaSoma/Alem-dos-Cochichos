@@ -1,278 +1,567 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ELECTRIC XTRA - Cyberpunk Landing Page by TemplateMo</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <link href="templatemo-electric-xtra.css" rel="stylesheet">
-<!--
-
-TemplateMo 596 Electric Xtra
-
-https://templatemo.com/tm-596-electric-xtra
-
--->
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Visual Novel - Prototipo</title>
+<style>
+  :root{
+    --bg:#0f1621; --card:#0b1220; --accent:#7ab7ff;
+    --text:#e6eef8; --muted:#b7c6d6;
+    --ui-radius:14px;
+    font-family: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%; margin:0; background:linear-gradient(180deg,#071021 0%, #081427 100%); color:var(--text)}
+  #app{width:100%;height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+  /* Game stage */
+  .game-wrap{width:100%;max-width:1280px;height:720px;border-radius:16px;overflow:hidden;position:relative;box-shadow:0 10px 40px rgba(0,0,0,0.6);background:#000;}
+  /* backgrounds */
+  .bg{position:absolute;inset:0;background-size:cover;background-position:center;transition:opacity .5s ease;opacity:1}
+  .bg.dim{filter:brightness(.65)}
+  /* character sprite */
+  .char{position:absolute;bottom:0;left:50%;transform:translateX(-50%);height:70%;background-size:contain;background-repeat:no-repeat;background-position:center bottom;pointer-events:none;transition:opacity .35s ease, transform .35s ease}
+  /* UI top bar */
+  .topbar{position:absolute;left:18px;top:16px;display:flex;gap:12px;align-items:center;z-index:60}
+  .logo{height:56px;width:56px;background-size:contain;background-repeat:no-repeat}
+  .creator{position:absolute;right:16px;top:12px;color:var(--muted);font-size:13px;z-index:80}
+  .creator strong{color:var(--text);font-weight:700}
+  /* text box */
+  .textbox{position:absolute;left:50%;transform:translateX(-50%);bottom:18px;width:92%;max-width:1180px;background:linear-gradient(180deg, rgba(11,18,32,0.84), rgba(6,10,18,0.9));border-radius:12px;padding:18px 20px;z-index:70;backdrop-filter: blur(4px);box-shadow:0 8px 20px rgba(0,0,0,0.6)}
+  .nameplate{font-weight:700;color:var(--accent);margin-bottom:6px}
+  .dialog{font-size:18px;line-height:1.45;color:var(--text);min-height:62px}
+  .choices{display:flex;gap:12px;margin-top:12px;flex-wrap:wrap}
+  .choice{background:rgba(255,255,255,0.03);padding:10px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);cursor:pointer;transition:all .15s;user-select:none}
+  .choice:hover{transform:translateY(-3px);box-shadow:0 6px 18px rgba(0,0,0,0.45)}
+  .next-hint{position:absolute;right:18px;bottom:26px;color:var(--muted);font-size:13px}
+  /* overlay screens */
+  .overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(2,6,12,0.6),rgba(2,6,12,0.85));display:flex;align-items:center;justify-content:center;z-index:90;backdrop-filter: blur(2px)}
+  .menu-card{width:720px;max-width:92%;background:linear-gradient(180deg,#071122,#0b1624);border-radius:16px;padding:28px;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,0.6)}
+  .menu-logo{width:180px;height:100px;margin:0 auto;background-size:contain;background-repeat:no-repeat}
+  .menu-title{font-size:28px;margin:10px 0 6px}
+  .menu-sub{color:var(--muted);margin-bottom:18px}
+  .menu-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+  .btn{padding:12px 18px;border-radius:12px;border:0;background:var(--accent);color:#032031;font-weight:700;cursor:pointer}
+  .btn.ghost{background:transparent;color:var(--text);border:1px solid rgba(255,255,255,0.06)}
+  /* name input */
+  .row{margin:8px 0;display:flex;gap:8px;justify-content:center}
+  input[type=text]{padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:var(--text);min-width:220px}
+  /* affordances */
+  .small{font-size:13px;color:var(--muted)}
+  /* responsive */
+  @media (max-width:880px){
+    .game-wrap{height:86vh}
+    .char{height:58%}
+    .textbox{padding:14px}
+  }
+</style>
 </head>
 <body>
-    <!-- Animated Grid Background -->
-    <div class="grid-bg"></div>
-    <div class="gradient-overlay"></div>
-    <div class="scanlines"></div>
-
-    <!-- Animated Shapes -->
-    <div class="shapes-container">
-        <div class="shape shape-circle"></div>
-        <div class="shape shape-triangle"></div>
-        <div class="shape shape-square"></div>
+<div id="app">
+  <div class="game-wrap" id="game">
+    <div class="topbar">
+      <div class="logo" id="menuArt"></div>
+      <div class="small" style="color:var(--muted);font-size:14px">Visual Novel Prototype</div>
     </div>
 
-    <!-- Floating Particles -->
-    <div id="particles"></div>
+    <div class="creator small">Criador: <strong>YAN COMERLATTO MASSONI</strong></div>
 
-    <!-- Navigation -->
-    <nav id="navbar">
-        <div class="nav-container">
-            <a href="#home" class="logo-link">
-                <svg class="logo-svg" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
-                    <defs>
-                        <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" style="stop-color:#FF5E00;stop-opacity:1" />
-                            <stop offset="100%" style="stop-color:#00B2FF;stop-opacity:1" />
-                        </linearGradient>
-                    </defs>
-                    <polygon points="20,2 38,14 38,26 20,38 2,26 2,14" fill="none" stroke="url(#logoGradient)" stroke-width="2"/>
-                    <polygon points="20,8 32,16 32,24 20,32 8,24 8,16" fill="url(#logoGradient)" opacity="0.3"/>
-                    <circle cx="20" cy="20" r="3" fill="url(#logoGradient)"/>
-                </svg>
-                <span class="logo-text">ELECTRIC XTRA</span>
-            </a>
-            <ul class="nav-links" id="navLinks">
-                <li><a href="#home" class="nav-link">Home</a></li>
-                <li><a href="#features" class="nav-link">Features</a></li>
-                <li><a href="#about" class="nav-link">About</a></li>
-                <li><a href="#contact" class="nav-link">Contact</a></li>
-            </ul>
-            <div class="menu-toggle" id="menuToggle">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-        </div>
-    </nav>
+    <!-- backgrounds -->
+    <div id="bg" class="bg dim"></div>
 
-    <!-- Hero Section -->
-    <section class="hero" id="home">
-        <div class="hero-content">
-            <div class="text-rotator">
-                <div class="text-set active">
-                    <h1 class="glitch-text" data-text="FUTURE IS NOW">FUTURE IS NOW</h1>
-                    <p class="subtitle">Enter the next dimension of digital innovation</p>
-                </div>
-                <div class="text-set">
-                    <h1 class="glitch-text" data-text="BEYOND LIMITS">BEYOND LIMITS</h1>
-                    <p class="subtitle">Where technology meets infinite possibilities</p>
-                </div>
-                <div class="text-set">
-                    <h1 class="glitch-text" data-text="ELECTRIC DREAMS">ELECTRIC DREAMS</h1>
-                    <p class="subtitle">Powering tomorrow's digital revolution today</p>
-                </div>
-            </div>
-        </div>
-        <div class="cta-container">
-            <a href="#features" class="cta-button cta-primary">Get Started</a>
-            <a href="#about" class="cta-button cta-secondary">Learn More</a>
-        </div>
-    </section>
+    <!-- character sprite -->
+    <div id="char" class="char" style="opacity:0"></div>
 
-    <!-- Features Section with Tabs -->
-    <section class="features" id="features">
-        <h2 class="section-title">Core Features</h2>
-        <div class="features-container">
-            <div class="feature-tabs">
-                <div class="tab-item active" data-tab="performance">
-                    <span class="tab-icon">⚡</span>
-                    <span>Performance</span>
-                </div>
-                <div class="tab-item" data-tab="security">
-                    <span class="tab-icon">🔒</span>
-                    <span>Security</span>
-                </div>
-                <div class="tab-item" data-tab="network">
-                    <span class="tab-icon">🌐</span>
-                    <span>Network</span>
-                </div>
-                <div class="tab-item" data-tab="analytics">
-                    <span class="tab-icon">📊</span>
-                    <span>Analytics</span>
-                </div>
-                <div class="tab-item" data-tab="integration">
-                    <span class="tab-icon">🔧</span>
-                    <span>Integration</span>
-                </div>
-            </div>
-            <div class="feature-content">
-                <div class="content-panel active" id="performance">
-                    <h3>Lightning Fast Performance</h3>
-                    <p>Experience unprecedented speed with our quantum-powered infrastructure. Built on cutting-edge technology that delivers results at the speed of thought. Electric Xtra CSS template is brought to you by TemplateMo website.</p>
-                    <ul class="feature-list">
-                        <li>Sub-millisecond response times</li>
-                        <li>99.99% uptime guarantee</li>
-                        <li>Automatic scaling based on demand</li>
-                        <li>Real-time data synchronization</li>
-                    </ul>
-                </div>
-                <div class="content-panel" id="security">
-                    <h3>Military-Grade Security</h3>
-                    <p>Your data is protected by the most advanced encryption protocols available. Multi-layered security ensures complete protection against cyber threats. You may tell your friends about TemplateMo free css website and how easy it is.</p>
-                    <ul class="feature-list">
-                        <li>256-bit AES encryption</li>
-                        <li>Biometric authentication</li>
-                        <li>Zero-knowledge architecture</li>
-                        <li>Real-time threat detection</li>
-                        <li>Automated security updates</li>
-                    </ul>
-                </div>
-                <div class="content-panel" id="network">
-                    <h3>Global Neural Network</h3>
-                    <p>Connect to our worldwide infrastructure that spans across continents. Seamless integration with existing systems and future-proof architecture.</p>
-                    <ul class="feature-list">
-                        <li>200+ global data centers</li>
-                        <li>Intelligent routing algorithms</li>
-                        <li>Cross-platform compatibility</li>
-                        <li>5G and satellite connectivity</li>
-                        <li>Decentralized architecture</li>
-                    </ul>
-                </div>
-                <div class="content-panel" id="analytics">
-                    <h3>Advanced Analytics</h3>
-                    <p>Harness the power of AI-driven insights to make data-driven decisions. Real-time analytics and predictive modeling at your fingertips.</p>
-                    <ul class="feature-list">
-                        <li>Machine learning algorithms</li>
-                        <li>Predictive analytics</li>
-                        <li>Custom dashboard creation</li>
-                        <li>Real-time data visualization</li>
-                        <li>Automated reporting</li>
-                    </ul>
-                </div>
-                <div class="content-panel" id="integration">
-                    <h3>Seamless Integration</h3>
-                    <p>Connect with thousands of apps and services through our universal API. Built to work with your existing tools and workflows.</p>
-                    <ul class="feature-list">
-                        <li>RESTful API architecture</li>
-                        <li>WebSocket support</li>
-                        <li>SDK for major platforms</li>
-                        <li>One-click integrations</li>
-                        <li>Custom webhook support</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </section>
+    <!-- text box -->
+    <div class="textbox" id="textbox" style="display:none">
+      <div class="nameplate" id="speaker">—</div>
+      <div class="dialog" id="dialog"></div>
+      <div class="choices" id="choices"></div>
+      <div class="next-hint small" id="hint">Clique para avançar</div>
+    </div>
 
-    <!-- About Section -->
-    <section class="about" id="about">
-        <h2 class="section-title">About Electric Xtra</h2>
-        <div class="about-content">
-            <div class="about-text">
-                <h2>Pioneering the Digital Frontier</h2>
-                <p>At ELECTRIC XTRA, we're not just building technology – we're crafting the future. Our mission is to bridge the gap between human potential and digital innovation, creating solutions that empower individuals and transform industries.</p>
-                <p>Founded by visionaries who saw beyond the limitations of current technology, ELECTRIC XTRA represents a quantum leap in digital infrastructure. We combine cutting-edge research with practical applications to deliver solutions that are both revolutionary and reliable.</p>
-                <p>Join us as we redefine what's possible in the digital age. The future isn't something that happens to us – it's something we create together.</p>
-            </div>
-            <div class="about-visual">
-                <div class="about-graphic"></div>
-            </div>
+    <!-- overlays: menu / name input / endings -->
+    <div class="overlay" id="menuOverlay">
+      <div class="menu-card">
+        <div class="menu-logo" id="menuLogo"></div>
+        <div class="menu-title">NOVO DIA — Visual Novel</div>
+        <div class="menu-sub">Um protótipo baseado na tua história. Escolhas afetam o afeto.</div>
+        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:10px">
+          <button class="btn" id="startBtn">JOGAR</button>
+          <button class="btn ghost" id="howBtn">COMO JOGAR</button>
+          <button class="btn ghost" id="creditsBtn">CRÉDITOS</button>
         </div>
-        
-        <!-- Second row with reversed layout -->
-        <div class="about-content" style="margin-top: 80px;">
-            <div class="about-visual">
-                <div class="about-graphic-alt">
-                    <div class="hexagon"></div>
-                    <div class="hexagon"></div>
-                    <div class="hexagon"></div>
-                </div>
-            </div>
-            <div class="about-text">
-                <h2>Innovation at Every Level</h2>
-                <p>Our commitment to excellence drives us to push boundaries and challenge conventions. With a team of world-class engineers, designers, and visionaries, we're creating solutions that not only meet today's needs but anticipate tomorrow's challenges.</p>
-                <p>From quantum computing to neural networks, from blockchain to AI, we're at the forefront of every technological revolution. Our integrated approach ensures that each innovation builds upon the last, creating a synergy that amplifies our impact.</p>
-                <p>Experience the power of true digital transformation. With ELECTRIC XTRA, you're not just adopting technology – you're embracing a philosophy of continuous evolution and limitless possibility.</p>
-            </div>
-        </div>
-    </section>
+        <div class="small">Imagens fornecidas por você — substitua-as quando quiser no código.</div>
+      </div>
+    </div>
 
-    <!-- Contact Section -->
-    <section class="contact" id="contact">
-        <h2 class="section-title">Get In Touch</h2>
-        <div class="contact-container">
-            <div class="contact-form">
-                <form id="contactForm">
-                    <div class="form-group">
-                        <label for="name">Name</label>
-                        <input type="text" id="name" name="name" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" id="email" name="email" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="subject">Subject</label>
-                        <input type="text" id="subject" name="subject" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="message">Message</label>
-                        <textarea id="message" name="message" required></textarea>
-                    </div>
-                    <button type="submit" class="submit-btn">Send Message</button>
-                </form>
-            </div>
-            <div class="contact-info">
-                <h3>Connect With Us</h3>
-                <div class="info-item">
-                    <div class="info-icon">📧</div>
-                    <div class="info-details">
-                        <h4>Email</h4>
-                        <p>contact@electricxtra.tech</p>
-                    </div>
-                </div>
-                <div class="info-item">
-                    <div class="info-icon">📱</div>
-                    <div class="info-details">
-                        <h4>Phone</h4>
-                        <p>+1 (555) 123-4567</p>
-                    </div>
-                </div>
-                <div class="info-item">
-                    <div class="info-icon">📍</div>
-                    <div class="info-details">
-                        <h4>Location</h4>
-                        <p>Neo Tokyo, Sector 7</p>
-                    </div>
-                </div>
-                <div class="map-container">
-                    <div class="map-placeholder">
-                        <p>Interactive Map</p>
-                        <p style="font-size: 0.9rem; margin-top: 10px;">Neo Tokyo, Sector 7</p>
-                    </div>
-                    <div class="map-overlay"></div>
-                </div>
-            </div>
+    <div class="overlay" id="nameOverlay" style="display:none">
+      <div class="menu-card">
+        <div class="menu-title">Escolha seu nome</div>
+        <div class="row">
+          <input type="text" id="playerNameInput" placeholder="Digite seu nome..." maxlength="20">
+          <button class="btn" id="confirmName">Confirmar</button>
         </div>
-    </section>
+        <div class="small" style="margin-top:12px">Seu nome aparecerá nas falas do protagonista.</div>
+      </div>
+    </div>
 
-    <!-- Footer -->
-    <footer>
-        <div class="footer-content">
-            <div class="footer-links">
-                <a href="#privacy">Privacy Policy</a>
-                <a href="#terms">Terms of Service</a>
-                <a href="#careers">Careers</a>
-            </div>
-            <p class="copyright">© 2025 ELECTRIC XTRA. All rights reserved. Building tomorrow, today. | Design: <a href="https://templatemo.com" target="_blank" rel="nofollow noopener">TemplateMo</a></p>
+    <div class="overlay" id="endOverlay" style="display:none">
+      <div class="menu-card" id="endCard">
+        <div class="menu-title" id="endTitle">Fim</div>
+        <div class="menu-sub" id="endText"></div>
+        <div style="display:flex;gap:10px;justify-content:center;margin-top:14px">
+          <button class="btn" id="restartBtn">Reiniciar</button>
+          <button class="btn ghost" id="menuBtn">Voltar ao Menu</button>
         </div>
-    </footer>
-<script src="templatemo-electric-scripts.js"></script>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+/*
+  Visual Novel single-file engine (prototipo)
+  - Troque as URLs no objeto ASSETS para suas imagens finais
+  - Sistema de afeto (affection) que determina caminhos/finais
+*/
+
+const ASSETS = {
+  logo: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgI2IFFxEOWJ9a2Qxm2b8AVPIXSrfpoNQ7jrUFciTuWd1bOVGt04d9eGL_bvg-Cm36pxQGXQWT0FVYF6Zy9ER3Sa1SoeFtaN5LjatxqOvS8QTeMgmWkkwkFtYtKaebKV5jSPJ6d4pWcE9rabmDlo9j8sdH96qc0_4_CFwgOAP1rjHljWdBgOAEqYgtY9_HM/s320/1f0391d1-b190-48e3-9823-482c6624bf97.png",
+  artMenu: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgbmefjKbkNBKcqJy7UdSK882TD8EE8O4e30uqSUaAIMQqKgXUzL6tOq4OwMrBdgyaCmUVv76tPUoDLQ_EbLYc8aM8NVRDp6u0RaBNTWOfd0Qm52APoExfVmhG9jyGW3JqcE_R_cJQuMI6Oo4xdybpjhG43h8rABRZyTxNwzDpzkIx7EGnBtlb8GiGzamz3/s320/7fd3a151-778d-40e6-a9ce-d59fb56b6595.png",
+  backgrounds: {
+    classroom: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjJIdENAJVgqTQDsjT21lO4Rm2sc1IV3Qt-ViY76pamcH_OhUouZ0yvKbHAZ6pHt2O_vgyk6ftATy2sLXrE55MfNfTwlazc2DbkCT-0bT9uaXQSvyBuaPTRWFxTzDuSo_DIg2CH8W4o34H-_0doZdZS7o_80cbC8vPVHHv7JyBC0sz6PT5mR2EBVDx9xrkR/s320/1f28dff2-9eda-40dc-aa50-272e6f3d114d.png",
+    corridor: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiwiK8RXZ2nlILZd6UGmDVOmDyQwB75RPkCajEf25wIYcc2lzVkelRyEGR-uqlpdUaUYfx6MXRNcsP61P6gwPwWTR0JgsiLjmanAu6fjIM_Ran9-uBVq-HOk8tO1sjAjdFAHRvVIknXgVHMQasCs56WHtIXvPs7UbONOR5ZiyqteuQ7pBhtAlm2p9xU-IMK/s320/302624f7-28c7-4504-997b-605a17d08aee.png",
+    library: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEidX2J7SNrB70DkBK722ZQJ_woMipa0yTd_8taF8Jze-qNvxHvlSy1dQCrvWTXs89mgSAdEtdDrdzqMdCgSlJ9wnFGO6BbDG9dl2UIDmPtYvTUUFKVvXvVwjQiS82a_MYqBk8qIMQL83yGSlfN3Qhtrb_keC2R3PaugNsZkf2Qs6ugyXHOQPAGz-5Yw1U3u/s320/dc5dbbf1-9147-481d-b212-8a725307a261.png",
+    patio: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgtkCqfrwELTVFVub9ZsINhIoQyyoD6qCxhZu_D4_Yeml7jlN6GZbQdJr1AI6rWnyp9si3WKnlD3t7eb1GHc0ERvazctJWZu3nvWaC86dmPV9UI8srFINATAIOByoj5U3LQZpWw07k1M5Tvf0N-983645wpJvDwyk_-oAv0XDLtd9YCfiKM0u5f1xte-1qf/s320/25c9779d-f2b4-4bd2-9955-4fc3c1f36b49.png",
+    street: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjU03KO_GkbUfBWgVQiDfd7A0r3mcSVdQGuQOa1elc0IZ59bu9Cdr4NAeaVQ9fZM7ScgxW8MGIaeLHyT57OzN95EZF62pGh0lfeEFaMiV52XLhSwSi6Ut4bljWRV4X3ApFX46IV40iIGZl6TuVUdAiOYSaOexa3w101uCb48A2u9cn_ECCInrM1EJlHIvQw/s320/f08408c7-9ab7-49f4-bea8-96c35ff47669.png",
+    night_special: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjU03KO_GkbUfBWgVQiDfd7A0r3mcSVdQGuQOa1elc0IZ59bu9Cdr4NAeaVQ9fZM7ScgxW8MGIaeLHyT57OzN95EZF62pGh0lfeEFaMiV52XLhSwSi6Ut4bljWRV4X3ApFX46IV40iIGZl6TuVUdAiOYSaOexa3w101uCb48A2u9cn_ECCInrM1EJlHIvQw/s320/f08408c7-9ab7-49f4-bea8-96c35ff47669.png"
+  },
+  sprites: {
+    neutral: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhdG6e5sjfiLbvSbtVGxFIX_LmGxXh7wRWzg_ZgqxeDvxsAXAldYsgWPhyphenhyphentlbmJX4ZQnGl7ypGO6sed3JdnGqt3KC_pGsOXgD3TKnTsif8dK_gMBcwJ-8sD4IxKyzQamy7dIQSZhez4dSYQ4NH7X9SBjvIWVhREIkfctaoJQGg-qHMGQvtgJ9bsYpfpmz0U/s320/63ad9301-3cdc-4956-9826-aabba17021fc.png",
+    uncomfortable: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj57HEfWxF7k2EwEY2qiX4w7kzhf_WXbhygRHNgOFmCDsn67USVncB37DrIKASpUpLVv055XzrPjQcR-Evv2AdXX7cpleZypH1JoEsnmG3MyBnI5i7Ae2EhQxIO0GMir2PQvsZo-hUEGkGU3Z_lacDG0a7nkNBWNBjBATObetW78RyvVvomEXFQoxJfnF6i/s320/38dbc72f-adc5-4736-a151-3f9de6e6a7d1-removebg-preview.png",
+    shy_bashful: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhsyGAEZ9nzbS8RpxfWa5TMZz5QWoR7wFj_j5qHGNGnu6qDQRjpyjwA-VE-pXfjG-ShHfqyUIzRiYsF74dfEw0tAgOVL6pspbfwe6LJczWMEJI87kW-PuI3qqsEYX8o0RgDageRemNCGCMX6iwt8jI-LbJEUcUf53nvIR71oFpZeWU41dXjC7TYkszEO_am/s320/image-removebg-preview%20(20).png",
+    happy_shy: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh9la3On91cbXMdMpHtbNBY8KA2EujruvL9NhjzrQ0C-97z5-QzPU5rNdvUSswIIYDrzkLmlr-VJWydfC8sDp5PjBamztTsqMJZGwmnR2EzdOD_8VNKqBepo32j8B0gTZwRiMo-iH8U7BD4vOjK-pNxiY_BRBxvAa1hnUq-0QSKwUQVClJ2Ff3BPj3iTWo6/s320/image-removebg-preview%20(21).png",
+    sad: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjP6B6yiU2kgRbV-RFjrGi02YfUOAW28T4658XGJg2UDKpmeUEQtHzT62WB5XKAubxcSCnBHXWt9tlvJhotsgL1bq6rmNjPBL2LdbaDmgtkFvkyhVZrsgGGTHT6SklZJFwvZQNTHc-oX4PDFuvRbxGC-_GNlntAoMgJYEoIeNJfbc3vMK8v6zfU3Zh-bXBq/s320/image-removebg-preview%20(22).png",
+    angry: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg3sQ77kGYV_0_uNMV82EiRzpNjr60lctM41yl8QWFixf9affV9kW1-HCFeR48ku8X9oDFlgWiGEgPDd9syFLMZgmBC9OmKsDFCFLqlIfZ4Aj42SaTWr_Qqxf70svG-A0e_L0jgGtOzFHqOllxzY5p4gL8yAZ17DyqoHnPinRmCzpoi-MunbRscLZGO3iRR/s320/image-removebg-preview%20(23).png",
+    surprised: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEilnbH9h6X0cwNyy2X5_63Ml6DVktg3IdS3go4Zk8krhNhhLlsjEMVGY-PRKFjcPWiQ4LgmIQhhnz9HqzVA9LKdJUUJuR2GQBxw0hPPXXwBgAnzmEdWZz5EEP-meZBFdYI_dfcNjH0KEVaDzyxPgswnAd8ym3srLwCtE7js9lBUo-batFsJWzsYDDKNa57n/s320/3fdf9aee-6f8e-4324-a71a-6a23b6b6dd4e.png",
+    romantic: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgOSmp99WsQKTTi6f7L0soPMDlqptx4PNyIkzgqvrP3Zn5qrkpw5Tv8VWGKnRwq7cVFfI61_uGiyBX0qR-b7ayAmAOgMQrUOjsutXavbOzkgHjou1S4gr4holfvasFcwdNyc7PYEdQDbnyt3bm4j7MM9glTl7jN6kzIMESHWYa4dQumAkswcoRBIdWY7NH2/s320/459765c8-bc95-4be8-a9da-7fd2cb19b402.png"
+  }
+};
+
+/* DOM nodes */
+const bgEl = document.getElementById('bg');
+const charEl = document.getElementById('char');
+const textbox = document.getElementById('textbox');
+const speakerEl = document.getElementById('speaker');
+const dialogEl = document.getElementById('dialog');
+const choicesEl = document.getElementById('choices');
+const menuOverlay = document.getElementById('menuOverlay');
+const nameOverlay = document.getElementById('nameOverlay');
+const startBtn = document.getElementById('startBtn');
+const confirmName = document.getElementById('confirmName');
+const playerNameInput = document.getElementById('playerNameInput');
+const menuLogo = document.getElementById('menuLogo');
+const menuArt = document.getElementById('menuArt');
+const endOverlay = document.getElementById('endOverlay');
+const endTitle = document.getElementById('endTitle');
+const endText = document.getElementById('endText');
+const restartBtn = document.getElementById('restartBtn');
+const menuBtn = document.getElementById('menuBtn');
+
+menuLogo.style.backgroundImage = `url(${ASSETS.logo})`;
+menuArt.style.backgroundImage = `url(${ASSETS.artMenu})`;
+
+/* Game state */
+let STATE = {
+  playerName: "Você",
+  affection: 0,
+  pointer: 0,
+  scene: "intro",
+  inChoice: false
+};
+
+/* Script structure:
+   Each node: { speaker, text, sprite, bg, choices: [ {text, action} ] , setAffection: n, goto: id }
+*/
+const SCRIPT = {
+  intro: [
+    { speaker: "Professor", text: "Turma, hoje temos uma nova aluna.", bg: "classroom" },
+    { speaker: "—", text: "Ela entra devagar, evita contato visual e se senta no fundo da sala.", bg: "classroom", sprite: "neutral" },
+    { speaker: "Narrador", text: "Todos cochicham, mas ninguém fala com ela.", bg: "classroom" },
+    { speaker: "—", text: "Escolha:", choices: [
+        { text: "Ignorar e continuar a aula", action: ()=> goTo('after_ignore', -1) },
+        { text: "Tentar puxar papo no intervalo", action: ()=> goTo('first_contact', +1) }
+      ]
+    }
+  ],
+
+  after_ignore: [
+    { speaker: "Narrador", text: "Você decide não intervir. A aula continua." , bg: "classroom" },
+    { speaker: "Narrador", text: "No intervalo, você a encontra no pátio, sozinha.", bg: "patio", goto: "meet_patio" }
+  ],
+
+  first_contact: [
+    { speaker: "Narrador", text: "No intervalo, você decide ir até ela.", bg: "patio", sprite: "uncomfortable" },
+    { speaker: "Ela", text: "Olá.", sprite: "uncomfortable", setAffection: 0 },
+    { speaker: "Narrador", text: "Ela fica desconfortável, responde curto, mas não é grossa.", sprite: "uncomfortable" },
+    { speaker: "Narrador", text: "Aos poucos você descobre que ela veio transferida de outra cidade e tem dificuldade em confiar.", goto: "first_contact_two" }
+  ],
+
+  meet_patio: [
+    { speaker: "Narrador", text: "Ela está desenhando sozinha, concentrada.", bg: "patio", sprite: "neutral" },
+    { speaker: "—", text: "Você pode comentar sobre o desenho ou respeitar o espaço dela.", choices: [
+        { text: "Comentar sobre o desenho", action: ()=> { STATE.affection += 1; goTo('comment_art') } },
+        { text: "Dar espaço e observar", action: ()=> goTo('observe_space') }
+      ]
+    }
+  ],
+
+  comment_art: [
+    { speaker: "Você", text: "Que legal o seu desenho. Você desenha sempre?", setAffection: +1, sprite: "happy_shy" },
+    { speaker: "Ela", text: "Nem sempre. Obrigada.", sprite: "shy_bashful", goto: "first_contact_two" }
+  ],
+
+  observe_space: [
+    { speaker: "Narrador", text: "Você decide não comentar. Ela nota sua gentileza e sorri discretamente.", sprite: "happy_shy", setAffection: +1, goto: "first_contact_two" }
+  ],
+
+  first_contact_two: [
+    { speaker: "Narrador", text: "Vocês trocam pequenas informações. Ela revela que prefere ficar sozinha por timidez e medo.", sprite: "shy_bashful" },
+    { speaker: "Narrador", text: "Você pode insistir em conversar mais ou dar espaço e mostrar interesse em outra ocasião.", choices: [
+        { text: "Insistir e tentar amizade", action: ()=> goTo('insist_friend') },
+        { text: "Dar espaço, mostrar interesse depois", action: ()=> goTo('give_space') }
+      ]
+    }
+  ],
+
+  insist_friend: [
+    { speaker: "Você", text: "Eu gostaria de ser seu amigo.", setAffection: +2 },
+    { speaker: "Ela", text: "Isso é... novo pra mim. Obrigada.", sprite: "shy_bashful", setAffection: +1, goto: "approach_sequence" }
+  ],
+
+  give_space: [
+    { speaker: "Você", text: "Tudo bem. Se quiser conversar depois, eu estarei por aí.", setAffection: +1 },
+    { speaker: "Ela", text: "Ok.", sprite: "neutral", goto: "approach_sequence" }
+  ],
+
+  approach_sequence: [
+    { speaker: "Narrador", text: "Depois de alguns encontros — biblioteca, corredor, saindo da escola — ela começa a mostrar lados diferentes.", bg: "library" },
+    { speaker: "Narrador", text: "Ela ri discretamente de uma piada sua. Fica vermelha quando você elogia.", sprite: "happy_shy" },
+    { speaker: "Narrador", text: "Evento: Um colega zoa ela.", choices: [
+        { text: "Defender ela", action: ()=> { STATE.affection += 2; goTo('defend_event') } },
+        { text: "Ficar quieto", action: ()=> { STATE.affection -= 1; goTo('quiet_event') } }
+      ]
+    }
+  ],
+
+  defend_event: [
+    { speaker: "Você", text: "Ei, para com isso.", setAffection: +1, sprite: "angry" },
+    { speaker: "Ela", text: "Obrigada... eu...", sprite: "surprised", goto: "approach_post" }
+  ],
+
+  quiet_event: [
+    { speaker: "Narrador", text: "Você não reage. Ela se afasta um pouco e parece magoada.", sprite: "sad", setAffection: -1, goto: "approach_post" }
+  ],
+
+  approach_post: [
+    { speaker: "Narrador", text: "Algum tempo depois, dependendo do afeto, diferentes rumos surgem.", goto: "affection_check" }
+  ],
+
+  affection_check: [
+    { speaker: "Narrador", text: "Avaliando conexão...", choices: [
+        { text: "Continuar", action: ()=> decideByAffection() }
+      ]
+    }
+  ],
+
+  romance_path: [
+    { speaker: "Narrador", text: "Ela começa a te esperar depois da aula. Rola um diálogo íntimo.", bg: "street", sprite: "romantic" },
+    { speaker: "Ela", text: "Nunca tive um amigo tão próximo. Eu... gosto de passar tempo com você.", sprite: "romantic" },
+    { speaker: "Você", text: "Eu... também. Posso te dizer algo?", setAffection: +1 },
+    { speaker: "Ela", text: "Diga.", sprite: "romantic" },
+    { speaker: "Narrador", text: "Você pode confessar seus sentimentos.", choices: [
+        { text: "Confessar sentimentos", action: ()=> goTo('confess_romance') },
+        { text: "Guardar e esperar", action: ()=> goTo('wait_romance') }
+      ]
+    }
+  ],
+
+  confess_romance: [
+    { speaker: "Você", text: "Gosto de você.", setAffection: +2 },
+    { speaker: "Ela", text: "Eu também.", sprite: "romantic", goto: "romance_end" }
+  ],
+
+  wait_romance: [
+    { speaker: "Narrador", text: "Você decide guardar. Vocês continuam próximos como amigos.", goto: "friend_end" }
+  ],
+
+  romance_end: [
+    { speaker: "Narrador", text: "Final: Romance. Cena especial noturna.", bg: "night_special", sprite: "romantic" , goto: "END_ROMANCE" }
+  ],
+
+  friend_end: [
+    { speaker: "Narrador", text: "Final: Amizade forte. Vocês seguem próximos.", sprite: "happy_shy", goto: "END_FRIEND" }
+  ],
+
+  distant_end: [
+    { speaker: "Narrador", text: "Final: Distanciamento. Ela se fecha completamente.", sprite: "sad", goto: "END_DISTANT" }
+  ],
+
+  /* small nodes for endings */
+  END_ROMANCE: [{ speaker: "—", text: "Vocês caminham juntos ao pôr do sol. Um novo começo." }],
+  END_FRIEND: [{ speaker: "—", text: "Vocês continuam amigos, com carinho e respeito." }],
+  END_DISTANT: [{ speaker: "—", text: "Vocês seguem caminhos diferentes. Restou apenas silêncio." }]
+};
+
+/* Helper: set background image */
+function setBG(key){
+  const url = ASSETS.backgrounds[key] || ASSETS.backgrounds.classroom;
+  bgEl.style.backgroundImage = `url(${url})`;
+}
+
+/* Helper: set character sprite */
+function setSprite(key){
+  if(!key){ charEl.style.opacity = 0; return; }
+  const url = ASSETS.sprites[key] || ASSETS.sprites.neutral;
+  charEl.style.backgroundImage = `url(${url})`;
+  charEl.style.opacity = 1;
+}
+
+/* Simple text typing effect */
+let typingTimer = null;
+function typeText(text, done){
+  dialogEl.innerHTML = "";
+  let i = 0;
+  clearInterval(typingTimer);
+  typingTimer = setInterval(()=> {
+    i++;
+    dialogEl.innerText = text.slice(0,i);
+    if(i >= text.length){
+      clearInterval(typingTimer);
+      typingTimer = null;
+      if(done) done();
+    }
+  }, 18);
+}
+
+/* Move to a script node id */
+function goTo(nodeId, affectionChange=0){
+  // apply immediate affection change if provided
+  if(typeof affectionChange === "number") STATE.affection += affectionChange;
+  STATE.scene = nodeId;
+  STATE.pointer = 0;
+  renderNode();
+}
+
+/* Render current node's line */
+function renderNode(){
+  const node = SCRIPT[STATE.scene];
+  if(!node) return console.error("No node:", STATE.scene);
+
+  // show textbox
+  textbox.style.display = "block";
+  choicesEl.innerHTML = "";
+
+  const line = node[STATE.pointer];
+  if(!line) {
+    // end of node array -> stay or hide
+    textbox.style.display = "none";
+    return;
+  }
+
+  // preset background / sprite
+  if(line.bg) setBG(line.bg);
+  if(line.sprite !== undefined) setSprite(line.sprite);
+
+  // if line sets affection
+  if(line.setAffection !== undefined){
+    if(typeof line.setAffection === "number") STATE.affection += line.setAffection;
+  }
+  // speaker
+  speakerEl.innerText = line.speaker || "";
+
+  // choices?
+  if(line.choices){
+    typeText(line.text || "", ()=>{ /* when typed, show choices */ });
+    // show choice buttons
+    choicesEl.innerHTML = "";
+    line.choices.forEach((c, idx)=>{
+      const btn = document.createElement('div');
+      btn.className = "choice";
+      btn.innerText = c.text;
+      btn.onclick = ()=>{
+        // action may be function or goto
+        if(typeof c.action === "function") c.action();
+        else if(typeof c.goto === "string") goTo(c.goto);
+        else if(typeof c.setAffection === "number") { STATE.affection += c.setAffection; if(c.goto) goTo(c.goto); }
+        else if(c.goto) goTo(c.goto);
+      };
+      choicesEl.appendChild(btn);
+    });
+    STATE.inChoice = true;
+    return;
+  }
+
+  // if single line with goto
+  if(line.goto){
+    typeText(line.text || "", ()=> {
+      // small delay then jump
+      setTimeout(()=> goTo(line.goto), 650);
+    });
+    STATE.pointer++;
+    return;
+  }
+
+  // if has direct setAffection already handled
+
+  // if choices absent -> simple advance on click
+  typeText(line.text || "", ()=>{
+    // show invisible "next" (click anywhere)
+  });
+  STATE.inChoice = false;
+
+  // attach click to advance
+}
+
+/* advance pointer */
+function advance(){
+  if(STATE.inChoice) return;
+  const node = SCRIPT[STATE.scene];
+  const line = node[STATE.pointer];
+  // if this line defines choices or goto, those were handled earlier
+  // move pointer forward
+  // apply setAffection if present on this line (some lines define setAffection as +n)
+  if(line && typeof line.setAffection === "number"){
+    STATE.affection += line.setAffection;
+    // null out so not applied multiple times
+    line.setAffection = undefined;
+  }
+  STATE.pointer++;
+  // if reached end of array
+  if(STATE.pointer >= node.length){
+    // default: hide textbox and do nothing, or if last line had goto handled earlier
+    // try to go to scene defined as ending?
+    textbox.style.display = "none";
+    // If node name is an END_* label, show ending card
+    if(STATE.scene.startsWith('END_') || STATE.scene.endsWith('_end') || STATE.scene === 'distant_end' || STATE.scene === 'romance_end' || STATE.scene === 'friend_end'){
+      showEndingByScene(STATE.scene);
+    } else {
+      // nothing -> keep displayed
+      // fallback: go to next pre-specified route
+      // If current node has no further lines, user might be expecting auto-next - do nothing.
+    }
+  } else {
+    renderNode();
+  }
+}
+
+/* decide path based on affection value */
+function decideByAffection(){
+  // affection thresholds (you can tune)
+  if(STATE.affection >= 4) goTo('romance_path');
+  else if(STATE.affection >= 1) goTo('approach_sequence'); // keep neutral -> friend possibility
+  else if(STATE.affection <= -1) goTo('distant_end');
+  else goTo('friend_end');
+}
+
+/* show ending overlay */
+function showEndingByScene(scene){
+  endOverlay.style.display = "flex";
+  if(scene === 'END_ROMANCE' || scene === 'romance_end'){
+    endTitle.innerText = "Romance";
+    endText.innerText = "Você conquistou o coração dela — final romântico.";
+  } else if(scene === 'END_FRIEND' || scene === 'friend_end'){
+    endTitle.innerText = "Amizade";
+    endText.innerText = "Vocês seguem amigos, com carinho e respeito.";
+  } else {
+    endTitle.innerText = "Distanciamento";
+    endText.innerText = "A conexão não cresceu. Ela se distanciou.";
+  }
+}
+
+/* preload images */
+function preloadAssets(list, cb){
+  const keys = Object.keys(list);
+  let todo = 0, done=0;
+  keys.forEach(k=>{
+    const val = list[k];
+    if(typeof val === "string"){
+      todo++; const img = new Image(); img.onload = ()=> { done++; if(done===todo) cb && cb() }; img.onerror = ()=> { done++; if(done===todo) cb && cb() }; img.src = val;
+    } else if(typeof val === "object"){
+      // nested
+      Object.values(val).forEach(v=>{
+        if(typeof v === "string'){ todo++; const img = new Image(); img.onload = ()=> { done++; if(done===todo) cb && cb() }; img.onerror = ()=> { done++; if(done===todo) cb && cb() }; img.src = v; }
+      });
+    }
+  });
+  if(todo===0) cb && cb();
+}
+
+/* start game */
+function startGame(){
+  menuOverlay.style.display = "none";
+  nameOverlay.style.display = "block";
+}
+
+/* confirm name */
+confirmName.onclick = ()=>{
+  const v = playerNameInput.value.trim();
+  if(v.length>0) STATE.playerName = v;
+  nameOverlay.style.display = "none";
+  // start scene
+  setBG('classroom');
+  setSprite(null);
+  goTo('intro');
+  textbox.style.display = "block";
+};
+
+/* register clicks on main game area to advance */
+document.getElementById('game').addEventListener('click', (e)=>{
+  // if overlays shown do nothing
+  if(menuOverlay.style.display !== "none" || nameOverlay.style.display !== "none" || endOverlay.style.display !== "none") return;
+  advance();
+});
+
+/* start button */
+startBtn.onclick = ()=> startGame();
+document.getElementById('howBtn').onclick = ()=> alert("Clique nas escolhas para tomar decisões. Seu afeto com a personagem muda os finais. Clique na tela para avançar o texto.");
+document.getElementById('creditsBtn').onclick = ()=> alert("Criador: YAN COMERLATTO MASSONI\nFeito com protótipo de Visual Novel.");
+
+restartBtn.onclick = ()=> {
+  // reset state
+  STATE.affection = 0;
+  STATE.pointer = 0;
+  STATE.scene = "intro";
+  endOverlay.style.display = "none";
+  menuOverlay.style.display = "none";
+  setBG('classroom');
+  setSprite(null);
+  textbox.style.display = "block";
+  renderNode();
+};
+menuBtn.onclick = ()=> location.reload();
+
+/* initial preload then ready */
+preloadAssets(ASSETS, ()=> {
+  console.log("Imagens pré-carregadas");
+  // show menu
+  menuOverlay.style.display = "flex";
+});
+
+/* small util to call goTo from choice action string */
+function decideByAffectionPlaceholder(){
+  decideByAffection();
+}
+
+/* helper used by choices for affection-driven jump */
+function decideByAffectionAction(){ decideByAffection(); }
+
+/* Expose helper used in SCRIPT */
+window.goTo = goTo;
+window.decideByAffection = decideByAffection;
+
+</script>
 </body>
 </html>
