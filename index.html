@@ -112,14 +112,14 @@ const SCENES = [
 
   // 1 new girl appears
   { bg:"classroom", sprite:"embarrassed", text:"A porta se abre devagar... uma aluna nova entra, todos olham." },
-  { bg:"classroom", sprite:"shy", text:"Ela fica em silêncio, parecendo nervosa, e te encara por um instante." },
+  { bg:"classroom", sprite:"embarrassed", text:"Ela fica em silêncio, parecendo nervosa, e te encara por um instante." },
   { bg:"classroom", sprite:"uncomfortable", text:"A garota olha ao redor, como se procurasse um lugar para se sentar." },
   { bg:"classroom", sprite:"neutral", text:"Você levanta a mão e oferece a cadeira ao lado da sua." },
   { bg:"classroom", sprite:"embarrassed", text:"Ela se aproxima, corada, e se senta timidamente ao seu lado." },
 
   // 6 teacher arrives, scene change to later
-  { bg:"classroom", sprite:"shy", text:"A aula passa devagar; você percebe que ela risca a caneta no caderno, inquieta." },
-  { bg:"hallway", sprite:"shy", text:"O sinal toca. No corredor, você a encontra novamente.", choice:[
+  { bg:"classroom", sprite:"embarrassed", text:"A aula passa devagar; você percebe que ela risca a caneta no caderno, inquieta." },
+  { bg:"hallway", sprite:"embarrassed", text:"O sinal toca. No corredor, você a encontra novamente.", choice:[
       { text:"Puxar conversa — 'Tudo bem?'", next:9, affection:+1 },
       { text:"Apenas acenar e seguir", next:10, affection:0 }
     ]
@@ -155,7 +155,7 @@ const SCENES = [
 
   // 17 sit and offer snack
   { bg:"courtyard", sprite:"romantic", text:"Ela sorri surpreso: 'Você trouxe...? Obrigada, estava com fome.' Ela come e se abre sobre a família.'"},
-  { bg:"courtyard", sprite:"shy", text:"Mika confessa que se mudou recentemente e sente falta de antigos amigos." },
+  { bg:"courtyard", sprite:"embarrassed", text:"Mika confessa que se mudou recentemente e sente falta de antigos amigos." },
 
   // 18 ignore
   { bg:"courtyard", sprite:"sad", text:"Ela abaixa a cabeça. Você vê nos olhos dela uma tristeza que te incomoda depois." },
@@ -372,7 +372,7 @@ function renderEnding(mode){
     setDialogue("Mika sorri com os olhos brilhando: 'Eu também gosto de você.' Vocês se aproximam sob as luzes do festival — um começo bonito para algo novo. ❤\n\n[Fim — Final Bom]");
   } else if(endingType === "neutral"){
     setBackground("street");
-    setSprite("shy");
+    setSprite("embarrassed");
     setDialogue("Há carinho e incerteza. Mika segura sua mão por um momento e depois solta com um sorriso tímido. Vocês seguem amigos, talvez algo mais no futuro.\n\n[Fim — Final Neutro]");
   } else {
     setBackground("classroom");
@@ -488,6 +488,7 @@ document.addEventListener("keydown", (e) => {
 </script>
 </body>
 </html>
+
 
 
 
