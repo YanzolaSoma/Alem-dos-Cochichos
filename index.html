@@ -119,7 +119,7 @@ const SCENES = [
 
   // 6 teacher arrives, scene change to later
   { bg:"classroom", sprite:"embarrassed", text:"A aula passa devagar; você percebe que ela risca a caneta no caderno, inquieta." },
-  { bg:"hallway", sprite:"uncomfortable", text:"O sinal toca. No corredor, você a encontra novamente.", choice:[
+  { bg:"hallway", sprite:"embarrassed", text:"O sinal toca. No corredor, você a encontra novamente.", choice:[
       { text:"Puxar conversa — 'Tudo bem?'", next:9, affection:+1 },
       { text:"Apenas acenar e seguir", next:10, affection:0 }
     ]
@@ -488,6 +488,7 @@ document.addEventListener("keydown", (e) => {
 </script>
 </body>
 </html>
+
 
 
 
