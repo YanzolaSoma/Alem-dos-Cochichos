@@ -11,10 +11,6 @@
       --text:#fff;
       <body>
 
-  <!-- Música de fundo -->
-  <audio id="bgm" loop>
-    <source src="gameMusic.mp3" type="audio/mpeg">
-  </audio>
 
   <div id="mainMenu">
     ...
@@ -55,6 +51,12 @@
   </style>
 </head>
 <body>
+
+  <!-- Música de fundo -->
+<audio id="bgm" autoplay loop>
+  <source src="gameMusic.mp3" type="audio/mpeg">
+  Seu navegador não suporta áudio.
+</audio>
 
   <div id="mainMenu">
     <div id="menuInner">
@@ -497,6 +499,7 @@ document.addEventListener("keydown", (e) => {
 </script>
 </body>
 </html>
+
 
 
 
