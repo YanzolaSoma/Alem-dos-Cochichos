@@ -9,6 +9,15 @@
       --panel: rgba(8,8,10,0.78);
       --bg:#0f0f10;
       --text:#fff;
+      <body>
+
+  <!-- Música de fundo -->
+  <audio id="bgm" loop>
+    <source src="URL_DA_SUA_MUSICA.mp3" type="audio/mpeg">
+  </audio>
+
+  <div id="mainMenu">
+    ...
     }
     html,body{height:100%; margin:0; background:var(--bg); color:var(--text); font-family: Inter, Arial, sans-serif; overflow:hidden;}
     #mainMenu, #gameUI{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; flex-direction:column;}
@@ -488,6 +497,7 @@ document.addEventListener("keydown", (e) => {
 </script>
 </body>
 </html>
+
 
 
 
