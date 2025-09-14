@@ -9,42 +9,135 @@
       --panel: rgba(8,8,10,0.78);
       --bg:#0f0f10;
       --text:#fff;
-      <body>
-
-
-  <div id="mainMenu">
-    ...
     }
-    html,body{height:100%; margin:0; background:var(--bg); color:var(--text); font-family: Inter, Arial, sans-serif; overflow:hidden;}
-    #mainMenu, #gameUI{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; flex-direction:column;}
-    #mainMenu{z-index:40; background: url("https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgbmefjKbkNBKcqJy7UdSK882TD8EE8O4e30uqSUaAIMQqKgXUzL6tOq4OwMrBdgyaCmUVv76tPUoDLQ_EbLYc8aM8NVRDp6u0RaBNTWOfd0Qm52APoExfVmhG9jyGW3JqcE_R_cJQuMI6Oo4xdybpjhG43h8rABRZyTxNwzDpzkIx7EGnBtlb8GiGzamz3/s320/7fd3a151-778d-40e6-a9ce-d59fb56b6595.png") center/cover no-repeat;}
-    #menuInner{background:linear-gradient(180deg, rgba(0,0,0,0.6), rgba(0,0,0,0.85)); padding:30px; border-radius:12px; text-align:center;}
-    #menuInner h1{margin:0 0 12px 0; font-size:34px;}
-    .menuBtn{padding:12px 28px; margin:8px; border-radius:10px; border:2px solid var(--accent); background:rgba(0,0,0,0.5); color:var(--text); cursor:pointer; font-size:16px;}
-    .menuBtn:hover{background:var(--accent); color:black;}
+
+    html,body{
+      height:100%;
+      margin:0;
+      background:var(--bg);
+      color:var(--text);
+      font-family: Inter, Arial, sans-serif;
+      overflow:hidden;
+    }
+
+    #mainMenu, #gameUI{
+      position:absolute;
+      inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex-direction:column;
+    }
+
+    #mainMenu{
+      z-index:40;
+      background: url("https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgbmefjKbkNBKcqJy7UdSK882TD8EE8O4e30uqSUaAIMQqKgXUzL6tOq4OwMrBdgyaCmUVv76tPUoDLQ_EbLYc8aM8NVRDp6u0RaBNTWOfd0Qm52APoExfVmhG9jyGW3JqcE_R_cJQuMI6Oo4xdybpjhG43h8rABRZyTxNwzDpzkIx7EGnBtlb8GiGzamz3/s320/7fd3a151-778d-40e6-a9ce-d59fb56b6595.png") center/cover no-repeat;
+    }
+
+    #menuInner{
+      background:linear-gradient(180deg, rgba(0,0,0,0.6), rgba(0,0,0,0.85));
+      padding:30px;
+      border-radius:12px;
+      text-align:center;
+    }
+
+    #menuInner h1{
+      margin:0 0 12px 0;
+      font-size:34px;
+    }
+
+    .menuBtn{
+      padding:12px 28px;
+      margin:8px;
+      border-radius:10px;
+      border:2px solid var(--accent);
+      background:rgba(0,0,0,0.5);
+      color:var(--text);
+      cursor:pointer;
+      font-size:16px;
+    }
+    .menuBtn:hover{
+      background:var(--accent);
+      color:black;
+    }
 
     /* game UI */
-    #background{position:absolute; inset:0; background:#222 center/cover no-repeat; z-index:0; transition:background-image .35s ease;}
-#char {
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  height: 80%;       /* diminuído de 95% para 80% */
-  max-height: 100%;
-  z-index: 1;
-  opacity: 0;
-  transition: opacity .25s ease;
-  pointer-events: none;
-}
-}
-    #hud{position:absolute; top:12px; left:12px; z-index:30; display:flex; gap:12px; align-items:center;}
-    #hud .box{background:var(--panel); padding:8px 12px; border-radius:8px; font-size:14px;}
-    #dialogueBox{position:absolute; left:6%; right:6%; bottom:4%; background:var(--panel); padding:18px; border-radius:12px; z-index:20; box-sizing:border-box; display:none;}
-    #dialogue{font-size:18px; line-height:1.4; min-height:48px;}
-    #choices{margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;}
-    #choices button{padding:10px 14px; border-radius:8px; border:none; cursor:pointer; background:var(--accent); color:black; font-weight:600;}
-    #choices button:hover{transform:translateY(-2px);}
+    #background{
+      position:absolute;
+      inset:0;
+      background:#222 center/cover no-repeat;
+      z-index:0;
+      transition:background-image .35s ease;
+    }
+
+    #char {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      height: 80%;
+      max-height: 100%;
+      z-index: 1;
+      opacity: 0;
+      transition: opacity .25s ease;
+      pointer-events: none;
+    }
+
+    #hud{
+      position:absolute;
+      top:12px;
+      left:12px;
+      z-index:30;
+      display:flex;
+      gap:12px;
+      align-items:center;
+    }
+
+    #hud .box{
+      background:var(--panel);
+      padding:8px 12px;
+      border-radius:8px;
+      font-size:14px;
+    }
+
+    #dialogueBox{
+      position:absolute;
+      left:6%;
+      right:6%;
+      bottom:4%;
+      background:var(--panel);
+      padding:18px;
+      border-radius:12px;
+      z-index:20;
+      box-sizing:border-box;
+      display:none;
+    }
+
+    #dialogue{
+      font-size:18px;
+      line-height:1.4;
+      min-height:48px;
+    }
+
+    #choices{
+      margin-top:12px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    #choices button{
+      padding:10px 14px;
+      border-radius:8px;
+      border:none;
+      cursor:pointer;
+      background:var(--accent);
+      color:black;
+      font-weight:600;
+    }
+    #choices button:hover{
+      transform:translateY(-2px);
+    }
 
     /* small helper */
     .small{font-size:13px; opacity:.9;}
@@ -53,10 +146,11 @@
 <body>
 
   <!-- Música de fundo -->
-<audio id="bgm" autoplay loop>
-  <source src="gameMusic.mp3" type="audio/mpeg">
-  Seu navegador não suporta áudio.
-</audio>
+  <audio id="bgm" autoplay loop>
+    <source src="gameMusic.mp3" type="audio/mpeg">
+    Seu navegador não suporta áudio.
+  </audio>
+
 
   <div id="mainMenu">
     <div id="menuInner">
@@ -499,6 +593,7 @@ document.addEventListener("keydown", (e) => {
 </script>
 </body>
 </html>
+
 
 
 
