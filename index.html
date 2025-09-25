@@ -32,11 +32,17 @@
     /* main menu (kept from original but hidden until after loading) */
     #mainMenu{ z-index:40; display:none; background: url("https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiY0m72dpb6KfJTgN6u1nD3jtpsjc76e0Dr1WnGk6k2YaEWF4ejJBCQUyXUJiUQqAKbOi1PYokFjC9qy3Zi6Sbc1yS6KxmUytYtVf2REjuXuFG9RBrEVLLHt7byTPOuAnxuX4gYkvEnGB92UBU4Ir2Mfa8sJ6FUa0FSTDESs3BklkBUC1b2KissTJRFUOW8/w945-h600-p-k-no-nu/ChatGPT%20Image%2015%20de%20set.%20de%202025,%2014_36_16.png") center/cover no-repeat; }
 
-    #menuInner{ background: linear-gradient(0deg, rgba(0,0,0,0.0), rgba(0,0,0,0.0)); width: 100vw; height: 100vh; padding: 0; border-radius: 0; text-align: center; }
-    #menuInner h1{ margin:0 0 12px 0; font-size:34px; }
+    #menuInner{ background: linear-gradient(0deg, rgba(0,0,0,0.0), rgba(0,0,0,0.0)); width: 100vw; height: 100vh; padding: 0; border-radius: 0; text-align: center; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:10px; }
+    #menuInner h1{ margin:0 0 12px 0; font-size:34px; text-shadow: 0 2px 6px rgba(0,0,0,0.6); }
 
     .menuBtn{ padding:12px 28px; margin:8px; border-radius:10px; border:2px solid var(--accent); background:rgba(0,0,0,0.5); color:var(--text); cursor:pointer; font-size:16px; }
     .menuBtn:hover{ background:var(--accent); color:black; }
+
+    /* Credits modal */
+    #creditsModal{ position:fixed; inset:0; display:none; align-items:center; justify-content:center; z-index:200; background:rgba(0,0,0,0.6); }
+    #creditsCard{ width:90%; max-width:520px; background:linear-gradient(180deg, rgba(10,10,12,0.98), rgba(8,8,10,0.95)); border-radius:12px; padding:18px; box-shadow:0 8px 30px rgba(0,0,0,0.6); color:var(--text); border:1px solid rgba(255,255,255,0.04); }
+    #creditsCard h3{ margin:0 0 10px 0; font-size:20px; }
+    #creditsCard p{ margin:6px 0; font-size:15px; }
 
     /* game UI (copied/kept) */
     #gameUI{ display:none; }
@@ -45,14 +51,15 @@
     #hud{ position:absolute; top:12px; left:12px; z-index:30; display:flex; gap:12px; align-items:center; }
     #hud .box{ background:var(--panel); padding:8px 12px; border-radius:8px; font-size:14px; }
     #dialogueBox{ position:absolute; left:6%; right:6%; bottom:4%; background:var(--panel); padding:18px; border-radius:12px; z-index:20; box-sizing:border-box; display:none; }
-    #dialogue{ font-size:18px; line-height:1.4; min-height:48px; }
+    #dialogue{ font-size:18px; line-height:1.4; min-height:48px; white-space:pre-wrap; }
     #choices{ margin-top:12px; display:flex; gap:10px; flex-wrap:wrap; }
     #choices button{ padding:10px 14px; border-radius:8px; border:none; cursor:pointer; background:var(--accent); color:black; font-weight:600; }
     #choices button:hover{ transform:translateY(-2px); }
+
     .small{font-size:13px; opacity:.9; }
 
     /* responsive tweaks */
-    @media (max-width:520px){ .loaderBox{ width:88%; } #menuInner h1{ font-size:22px; } }
+    @media (max-width:520px){ .loaderBox{ width:88%; } #menuInner h1{ font-size:22px; } #creditsCard{ padding:12px; } #dialogue{ font-size:16px; } }
   </style>
 </head>
 <body>
@@ -74,7 +81,7 @@
       <h2>Carregando o jogo...</h2>
       <div class="progressOuter"><div class="progressInner" id="progressInner"></div></div>
       <div class="loadingText" id="loadingText">0%</div>
-      <p class="small" style="margin-top:8px">Dica: pressione <strong>Espaço</strong> para avançar nas falas.</p>
+      <p class="small" style="margin-top:8px">Dica: pressione <strong>Espaço</strong> para avançar nas falas. Pressione Espaço de novo para pular o efeito de digitação.</p>
     </div>
   </div>
 
@@ -86,8 +93,24 @@
       <div style="margin-top:18px">
         <button class="menuBtn" onclick="startGame()">Novo Jogo</button>
         <button class="menuBtn" onclick="loadState()">Carregar</button>
+        <button class="menuBtn" onclick="openCredits()">Créditos</button>
       </div>
       <p class="small" style="margin-top:10px">Avance: <strong>Espaço</strong> — Escolhas: clique no botão</p>
+    </div>
+  </div>
+
+  <!-- Credits modal -->
+  <div id="creditsModal" onclick="if(event.target===this) closeCredits()">
+    <div id="creditsCard">
+      <h3>Créditos</h3>
+      <p><strong>Jogo criado por:</strong> Yan Comerlatto Massoni</p>
+      <p><strong>Código por:</strong> ChatGPT</p>
+      <p><strong>Artes por:</strong> ChatGPT</p>
+      <p><strong>Roteiro:</strong> Yan Comerlatto Massoni</p>
+      <p style="margin-top:10px" class="small">Clique fora ou em Fechar para voltar.</p>
+      <div style="display:flex; justify-content:flex-end; margin-top:8px;">
+        <button class="menuBtn" onclick="closeCredits()">Fechar</button>
+      </div>
     </div>
   </div>
 
@@ -111,7 +134,6 @@
 /* --- Setup studio image (user link) --- */
 const STUDIO_IMAGE = "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh8CpXJQuxJ20PJWMAwUt-IjF-2mvAeOLtijoNsf7IIMjD_mKIg3rbM3d3uwfy_ef1J4ha2JtJXnNJoc45GOW89U22eYVb-bq7zxNjLPXfj1R1HB4vHXOTRjJ9LYqvaH3J30LE7tBTB1EfwUJSwEK8S-CefqRnJpZDd9WHVNXw5PyP7p6eiy8z1TwMc5YoZ/w945-h600-p-k-no-nu/CRIADO%20POR.jpg";
 
-// apply it to the intro div background
 const introDiv = document.getElementById('studioIntro');
 introDiv.style.backgroundImage = `url('${STUDIO_IMAGE}')`;
 introDiv.style.backgroundPosition = 'center';
@@ -122,6 +144,14 @@ function skipIntro(){ introSkipped = true; endIntro(); }
 
 document.addEventListener('keydown', (e) => { if(e.key === 'Escape') skipIntro(); });
 
+/* --- Credits functions --- */
+function openCredits(){
+  document.getElementById('creditsModal').style.display = 'flex';
+}
+function closeCredits(){
+  document.getElementById('creditsModal').style.display = 'none';
+}
+
 /* --- Loading logic --- */
 function showLoadingAndThenMenu(){
   document.getElementById('studioIntro').style.display = 'none';
@@ -131,10 +161,9 @@ function showLoadingAndThenMenu(){
   const txt = document.getElementById('loadingText');
   let pct = 0;
 
-  // simulate loading with timed intervals; total ~2200ms
   const interval = setInterval(() => {
     if(introSkipped) pct = 100;
-    pct += Math.floor(Math.random()*8) + 6; // random-ish increment
+    pct += Math.floor(Math.random()*8) + 6;
     if(pct >= 100) pct = 100;
     inner.style.width = pct + '%';
     txt.textContent = pct + '%';
@@ -149,22 +178,19 @@ function showLoadingAndThenMenu(){
 }
 
 function endIntro(){
-  // fade out intro quickly then show loading
   const el = document.getElementById('studioIntro');
   el.style.transition = 'opacity .35s ease';
   el.style.opacity = 0;
   setTimeout(()=>{ el.style.display = 'none'; showLoadingAndThenMenu(); }, 380);
 }
 
-/* auto-play intro then loading */
 window.addEventListener('load', ()=>{
-  // ensure intro shows briefly even on fast loads
   setTimeout(()=>{
     if(!introSkipped) endIntro();
-  }, 1800); // keep studio image for ~1.8s before loading
+  }, 1800);
 });
 
-/* ---------- SPRITES + BACKGROUNDS + SCENES (copied from your original game code) ---------- */
+/* ---------- SPRITES + BACKGROUNDS + SCENES ---------- */
 
 const SPRITES = {
   neutral: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhdG6e5sjfiLbvSbtVGxFIX_LmGxXh7wRWzg_ZgqxeDvxsAXAldYsgWPhyphenhyphentlbmJX4ZQnGl7ypGO6sed3JdnGqt3KC_pGsOXgD3TKnTsif8dK_gMBcwJ-8sD4IxKyzQamy7dIQSZhez4dSYQ4NH7X9SBjvIWVhREIkfctaoJQGg-qHMGQvtgJ9bsYpfpmz0U/s320/63ad9301-3cdc-4956-9826-aabba17021fc.png",
@@ -268,42 +294,105 @@ const SCENES = [
   }
 ];
 
-/* ---------- ENGINE FUNCTIONS (copied from original) ---------- */
+/* ---------- ENGINE & TYPING EFFECT ---------- */
+
 function setSprite(key){ const char = document.getElementById("char"); if(!key){ char.style.opacity = 0; return; } char.src = SPRITES[key] || ""; char.style.opacity = 1; }
 function setBackground(key){ const bg = document.getElementById("background"); bg.style.backgroundImage = `url('${BACKGROUNDS[key] || BACKGROUNDS.classroom}')`; }
-function setDialogue(text){ document.getElementById("dialogue").textContent = text; }
 function updateHud(){ document.getElementById("affectionValue").textContent = state.affection; document.getElementById("hud").style.display = "flex"; }
 
 let state = { sceneIndex: 0, affection: 0 };
+
+/* Typing control variables */
+const TYPING_SPEED = 22; // ms per char (ajuste aqui)
+let typingTimer = null;
+let currentlyTyping = false;
+let fullTextQueued = ""; // texto que está sendo digitado
+let charPos = 0;
+
+/* typeText: digita texto caractere por caractere no #dialogue
+   - se 'immediate' = true, mostra todo texto imediatamente (pula)
+   - retorna uma Promise que resolve quando a digitação terminar
+*/
+function typeText(text, immediate = false){
+  return new Promise((resolve) => {
+    const dlg = document.getElementById("dialogue");
+    clearInterval(typingTimer);
+    currentlyTyping = false;
+    fullTextQueued = text || "";
+    charPos = 0;
+    dlg.textContent = "";
+
+    if(immediate || TYPING_SPEED <= 0){
+      dlg.textContent = fullTextQueued;
+      currentlyTyping = false;
+      fullTextQueued = "";
+      resolve();
+      return;
+    }
+
+    currentlyTyping = true;
+    typingTimer = setInterval(() => {
+      // add next char
+      charPos++;
+      dlg.textContent = fullTextQueued.slice(0, charPos);
+      // auto-complete punctuation pauses can be added here if desired
+      if(charPos >= fullTextQueued.length){
+        clearInterval(typingTimer);
+        currentlyTyping = false;
+        fullTextQueued = "";
+        resolve();
+      }
+    }, TYPING_SPEED);
+  });
+}
+
+/* Call this to immediately finish current typing (if any) */
+function finishTypingImmediately(){
+  if(!currentlyTyping) return;
+  clearInterval(typingTimer);
+  document.getElementById("dialogue").textContent = fullTextQueued;
+  currentlyTyping = false;
+  fullTextQueued = "";
+}
+
+/* ---------- RENDERING SCENES ---------- */
 
 function renderScene(){
   const idx = state.sceneIndex;
   if(idx === 1000 || idx === 1001 || idx === 1002){ renderEnding(idx); return; }
   const scene = SCENES[idx];
   if(!scene){ renderEnding(null); return; }
+
   document.getElementById("dialogueBox").style.display = "block";
   document.getElementById("gameUI").style.display = "block";
   setBackground(scene.bg);
   setSprite(scene.sprite);
-  setDialogue(scene.text);
   updateHud();
+
   const choiceBox = document.getElementById("choices");
   choiceBox.innerHTML = "";
-  if(scene.choice && Array.isArray(scene.choice)){
-    choiceBox.style.display = "flex";
-    scene.choice.forEach(opt => {
-      const btn = document.createElement("button");
-      btn.textContent = opt.text;
-      btn.onclick = () => {
-        if(typeof opt.affection === "number") state.affection += opt.affection;
-        if(state.affection > 99) state.affection = 99;
-        if(state.affection < -99) state.affection = -99;
-        state.sceneIndex = opt.next;
-        renderScene();
-      };
-      choiceBox.appendChild(btn);
-    });
-  } else { choiceBox.style.display = "none"; }
+
+  // Start typing, then show choices (if exist) after typing completes.
+  typeText(scene.text).then(() => {
+    // after typing ended:
+    if(scene.choice && Array.isArray(scene.choice)){
+      choiceBox.style.display = "flex";
+      scene.choice.forEach(opt => {
+        const btn = document.createElement("button");
+        btn.textContent = opt.text;
+        btn.onclick = () => {
+          if(typeof opt.affection === "number") state.affection += opt.affection;
+          if(state.affection > 99) state.affection = 99;
+          if(state.affection < -99) state.affection = -99;
+          state.sceneIndex = opt.next;
+          renderScene();
+        };
+        choiceBox.appendChild(btn);
+      });
+    } else {
+      choiceBox.style.display = "none";
+    }
+  }).catch(()=>{ /* ignore */});
 }
 
 function renderEnding(mode){
@@ -325,45 +414,136 @@ function renderEnding(mode){
     else if (affection >= 0) endingType = "neutral";
     else endingType = "bad";
   }
+
   if(endingType === "best"){
-    setBackground("courtyard"); setSprite("romantic"); setDialogue("Mika sorri com os olhos brilhando: 'Eu também gosto de você.' Vocês se aproximam sob as luzes do festival — um começo bonito para algo novo. ❤\n\n[Fim — Final Bom]");
+    setBackground("courtyard"); setSprite("romantic");
+    typeText("Mika sorri com os olhos brilhando: 'Eu também gosto de você.' Vocês se aproximam sob as luzes do festival — um começo bonito para algo novo. ❤\n\n[Fim — Final Bom]", true).then(() => {
+      showEndingChoices();
+    });
   } else if(endingType === "neutral"){
-    setBackground("street"); setSprite("embarrassed"); setDialogue("Há carinho e incerteza. Mika segura sua mão por um momento e depois solta com um sorriso tímido. Vocês seguem amigos, talvez algo mais no futuro.\n\n[Fim — Final Neutro]");
+    setBackground("street"); setSprite("embarrassed");
+    typeText("Há carinho e incerteza. Mika segura sua mão por um momento e depois solta com um sorriso tímido. Vocês seguem amigos, talvez algo mais no futuro.\n\n[Fim — Final Neutro]", true).then(() => {
+      showEndingChoices();
+    });
   } else {
-    setBackground("classroom"); setSprite("sad"); setDialogue("O silêncio pesa. Mika se afasta gentilmente: 'Acho melhor...' Ela vai embora. Você fica com a sensação do que poderia ter sido.\n\n[Fim — Final Ruim / Bittersweet]");
+    setBackground("classroom"); setSprite("sad");
+    typeText("O silêncio pesa. Mika se afasta gentilmente: 'Acho melhor...' Ela vai embora. Você fica com a sensação do que poderia ter sido.\n\n[Fim — Final Ruim / Bittersweet]", true).then(() => {
+      showEndingChoices();
+    });
   }
-  const choiceBox = document.getElementById("choices"); choiceBox.innerHTML = ""; choiceBox.style.display = "flex";
-  const btnRestart = document.createElement("button"); btnRestart.textContent = "Reiniciar"; btnRestart.onclick = () => { restartGame(); }; choiceBox.appendChild(btnRestart);
-  const btnMenu = document.createElement("button"); btnMenu.textContent = "Voltar ao Menu"; btnMenu.onclick = () => { backToMenu(); }; choiceBox.appendChild(btnMenu);
 }
 
-function nextScene(){ const scene = SCENES[state.sceneIndex]; if(scene && scene.choice) return; state.sceneIndex++; renderScene(); }
+function showEndingChoices(){
+  const choiceBox = document.getElementById("choices");
+  choiceBox.innerHTML = "";
+  choiceBox.style.display = "flex";
+  const btnRestart = document.createElement("button"); btnRestart.textContent = "Reiniciar"; btnRestart.onclick = () => { restartGame(); };
+  const btnMenu = document.createElement("button"); btnMenu.textContent = "Voltar ao Menu"; btnMenu.onclick = () => { backToMenu(); };
+  choiceBox.appendChild(btnRestart);
+  choiceBox.appendChild(btnMenu);
+}
+
+/* ---------- NAVIGATION / STATE ---------- */
+
+function nextScene(){
+  const scene = SCENES[state.sceneIndex];
+  // If typing is in progress -> finish it
+  if(currentlyTyping){ finishTypingImmediately(); return; }
+
+  // If current scene has choices, don't advance with space (user must click)
+  if(scene && scene.choice) return;
+
+  // otherwise advance
+  state.sceneIndex++;
+  renderScene();
+}
 
 function startGame(){ document.getElementById("mainMenu").style.display = "none"; document.getElementById("gameUI").style.display = "block"; state.sceneIndex = 0; state.affection = 0; renderScene(); }
 function restartGame(){ state.sceneIndex = 0; state.affection = 0; renderScene(); }
 function backToMenu(){ document.getElementById("mainMenu").style.display = "flex"; document.getElementById("gameUI").style.display = "none"; state.sceneIndex = 0; state.affection = 0; document.getElementById("hud").style.display = "none"; }
 
+/* ---------- Save / Load ---------- */
 function saveState(){ localStorage.setItem("vn_save", JSON.stringify(state)); alert("Jogo salvo!"); }
 function loadState(){ const data = localStorage.getItem("vn_save"); if(!data){ alert("Nenhum save encontrado."); return; } state = JSON.parse(data); document.getElementById("mainMenu").style.display = "none"; document.getElementById("gameUI").style.display = "block"; renderScene(); }
 
-document.addEventListener("keydown", (e) => { if(e.code === "Space"){ e.preventDefault(); nextScene(); } if(e.key.toLowerCase() === "s" && e.ctrlKey){ e.preventDefault(); saveState(); } });
+/* ---------- Keyboard handling ---------- */
+/* Espaço: - se digitando -> pula e mostra tudo
+           - se não digitando e não houver escolhas -> avança
+   Ctrl+S: salvar (usado no HUD)
+*/
+document.addEventListener("keydown", (e) => {
+  // avoid interfering while typing in input fields in future
+  const active = document.activeElement;
+  if(active && (active.tagName === "INPUT" || active.tagName === "TEXTAREA")) return;
 
-(function addQuickHUDButtons(){ const hud = document.getElementById("hud"); const container = document.createElement("div"); container.className = "box small"; container.style.display = "flex"; container.style.gap = "6px"; const saveBtn = document.createElement("button"); saveBtn.textContent = "Salvar"; saveBtn.style.padding = "6px 8px"; saveBtn.style.borderRadius = "6px"; saveBtn.onclick = saveState; container.appendChild(saveBtn); const loadBtn = document.createElement("button"); loadBtn.textContent = "Carregar"; loadBtn.style.padding = "6px 8px"; loadBtn.style.borderRadius = "6px"; loadBtn.onclick = loadState; container.appendChild(loadBtn); hud.appendChild(container); })();
+  if(e.code === "Space"){
+    e.preventDefault();
+    // If modal credits is open, close it with Esc/Space as well
+    if(document.getElementById('creditsModal').style.display === 'flex'){
+      closeCredits();
+      return;
+    }
+    if(currentlyTyping){
+      // finish typing immediately on first Space
+      finishTypingImmediately();
+      return;
+    }
+    // if not typing: try advance
+    const scene = SCENES[state.sceneIndex];
+    if(scene && scene.choice){
+      // do nothing (choices require click)
+      return;
+    } else {
+      nextScene();
+    }
+  }
+
+  if(e.key.toLowerCase() === "s" && e.ctrlKey){
+    e.preventDefault();
+    saveState();
+  }
+
+  if(e.key === "Escape"){
+    // close credits if open
+    if(document.getElementById('creditsModal').style.display === 'flex'){
+      closeCredits();
+    }
+  }
+});
+
+/* ---------- Quick HUD (save/load) ---------- */
+(function addQuickHUDButtons(){
+  const hud = document.getElementById("hud");
+  const container = document.createElement("div");
+  container.className = "box small";
+  container.style.display = "flex";
+  container.style.gap = "6px";
+  const saveBtn = document.createElement("button");
+  saveBtn.textContent = "Salvar";
+  saveBtn.style.padding = "6px 8px";
+  saveBtn.style.borderRadius = "6px";
+  saveBtn.onclick = saveState;
+  container.appendChild(saveBtn);
+  const loadBtn = document.createElement("button");
+  loadBtn.textContent = "Carregar";
+  loadBtn.style.padding = "6px 8px";
+  loadBtn.style.borderRadius = "6px";
+  loadBtn.onclick = loadState;
+  container.appendChild(loadBtn);
+  hud.appendChild(container);
+})();
+
+/* ensure audio autoplay starts muted if blocked by browser, allow unmute later */
+document.addEventListener('DOMContentLoaded', () => {
+  const audio = document.getElementById('bgm');
+  if(audio && audio.paused){
+    audio.muted = true;
+    audio.play().catch(()=>{ /* some browsers block autoplay — muted fallback */});
+  }
+});
 
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
 
 
