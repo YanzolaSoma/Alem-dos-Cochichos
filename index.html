@@ -170,7 +170,7 @@
     <div id="hud" style="display:none;">
       <div class="box">Além dos Cochichos</div>
       <div class="box">Afeto: <span id="affectionValue">0</span></div>
-      <div class="box small">Pressione Espaço para avançar</div>
+      <div class="box small">Pressione Espaço para avançar ou clique na tela se estiver no celular</div>
     </div>
 
     <div id="dialogueBox">
@@ -190,7 +190,7 @@ const SPRITES = {
   sad: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjP6B6yiU2kgRbV-RFjrGi02YfUOAW28T4658XGJg2UDKpmeUEQtHzT62WB5XKAubxcSCnBHXWt9tlvJhotsgL1bq6rmNjPBL2LdbaDmgtkFvkyhVZrsgGGTHT6SklZJFwvZQNTHc-oX4PDFuvRbxGC-_GNlntAoMgJYEoIeNJfbc3vMK8v6zfU3Zh-bXBq/s320/image-removebg-preview%20(22).png",
   angry: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg3sQ77kGYV_0_uNMV82EiRzpNjr60lctM41yl8QWFixf9affV9kW1-HCFeR48ku8X9oDFlgWiGEgPDd9syFLMZgmBC9OmKsDFCFLqlIfZ4Aj42SaTWr_Qqxf70svG-A0e_L0jgGtOzFHqOllxzY5p4gL8yAZ17DyqoHnPinRmCzpoi-MunbRscLZGO3iRR/s320/image-removebg-preview%20(23).png",
   surprised: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEilnbH9h6X0cwNyy2X5_63Ml6DVktg3IdS3go4Zk8krhNhhLlsjEMVGY-PRKFjcPWiQ4LgmIQhhnz9HqzVA9LKdJUUJuR2GQBxw0hPPXXwBgAnzmEdWZz5EEP-meZBFdYI_dfcNjH0KEVaDzyxPgswnAd8ym3srLwCtE7js9lBUo-batFsJWzsYDDKNa57n/s320/3fdf9aee-6f8e-4324-a71a-6a23b6b6dd4e.png",
-  romantic: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgOSmp99WsQKTTi6f7L0soPMDlqptx4PNyIkzgqvrP3Zn5qrkpw5Tv8VWGKnRwq7cVFfI61_uGiyBX0qR-b7ayAmAOgMQrUOjsutXavbOzkgHjou1S4gr4holfvasFcwdNyc7PYEdQDbnyt3bm4j7MM9glTl7jN6kzIMESHWYa4dQumAkswcoRBIdWY7NH2/s320/459765c8-bc95-4be8-a9da-7fd2cb19b402.png"
+  romantic: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgOSmp99WsQKTTi6f7L0soPMDlqptx4PNyIkzgqvrP3Zn5qrkpw5Tv8VWGKnRwq7cVFfI61_uGiyBX0qR-b7ayAmAOgMQrUOjsutXavbOzkgHjou1S4gr4holfvasFcwdNyc7PYEdQDbnyt3bm4j7MM9glTl7jN6zIMESHWYa4dQumAkswcoRBIdWY7NH2/s320/459765c8-bc95-4be8-a9da-7fd2cb19b402.png"
 };
 
 const BACKGROUNDS = {
@@ -284,7 +284,7 @@ const SCENES = [
   { bg:"street", sprite:"neutral", text:"— Um encontro com amigos pode ser legal — ela sorri timidamente, aliviada." },
 
   // mid-game small conflict
-  { bg:"classroom", sprite:"angry", text:"Na semana seguinte, um colega provoca Mika por ser nova. Ela fica nervosa." , choice:[
+  { bg:"classroom", sprite:"angry", text:"Na semana seguinte, um colega provoca Mika por ser nova. Ela fica nervosa.", choice:[
       { text:"Intervir e defender Mika", next:27, affection:+2 },
       { text:"Ficar calado por medo", next:28, affection:-2 }
     ]
@@ -563,6 +563,28 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
+/* ---------- Click to advance (NEW) ---------- */
+// This listener makes the dialogue advance when the player clicks anywhere
+// *except* when interacting with menu, HUD, or choice buttons.
+// It respects the existing rule: if the current scene has choices, clicking won't auto-advance.
+
+document.addEventListener('click', (e) => {
+  // ignore clicks when main menu is visible
+  if(document.getElementById('mainMenu').style.display !== 'none') return;
+  // ignore clicks on HUD, menu inner or choice buttons (so they don't trigger nextScene)
+  if(e.target.closest('#hud') || e.target.closest('#menuInner') || e.target.closest('#choices')) return;
+  // ensure dialogue box is visible
+  if(document.getElementById('dialogueBox').style.display === 'none') return;
+
+  const scene = SCENES[state.sceneIndex];
+  if(!scene) return;
+  // if the scene has choices, don't auto-advance — wait for player selection
+  if(scene.choice && Array.isArray(scene.choice)) return;
+
+  // otherwise advance
+  nextScene();
+});
+
 /* ---------- Extras: quick buttons in HUD (optional) ---------- */
 (function addQuickHUDButtons(){
   // small area already in HTML for hud
@@ -593,24 +615,6 @@ document.addEventListener("keydown", (e) => {
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
